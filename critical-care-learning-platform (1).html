@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Critical Care Nursing Learning Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ RESET & BASE ============ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-1:#0f0c29;
+  --bg-2:#302b63;
+  --bg-3:#24243e;
+  --glass:rgba(255,255,255,0.06);
+  --glass-strong:rgba(255,255,255,0.10);
+  --glass-border:rgba(255,255,255,0.15);
+  --primary:#7f5af0;
+  --primary-2:#2cb67d;
+  --accent:#ff6b9d;
+  --accent-2:#4dd0e1;
+  --warn:#ffb347;
+  --danger:#ff5e5e;
+  --success:#34d399;
+  --text:#fffffe;
+  --text-muted:#94a1b2;
+  --text-dim:#5b6479;
+  --radius:18px;
+  --shadow:0 8px 32px rgba(0,0,0,0.37);
+  --t-fast:0.18s cubic-bezier(.4,0,.2,1);
+  --t-med:0.35s cubic-bezier(.4,0,.2,1);
+}
+html,body{height:100%}
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  color:var(--text);
+  background:var(--bg-1);
+  overflow-x:hidden;
+  min-height:100vh;
+  position:relative;
+}
+/* ============ ANIMATED BACKGROUND ============ */
+.bg-anim{
+  position:fixed;inset:0;z-index:-2;
+  background:linear-gradient(-45deg,#0f0c29,#302b63,#24243e,#1a1448,#0f0c29);
+  background-size:400% 400%;
+  animation:bgshift 18s ease infinite;
+}
+@keyframes bgshift{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+.bg-blobs{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.45;animation:floatBlob 22s ease-in-out infinite}
+.blob.b1{width:480px;height:480px;background:radial-gradient(circle,#7f5af0,transparent 60%);top:-100px;left:-100px}
+.blob.b2{width:520px;height:520px;background:radial-gradient(circle,#2cb67d,transparent 60%);bottom:-150px;right:-120px;animation-delay:-7s}
+.blob.b3{width:380px;height:380px;background:radial-gradient(circle,#ff6b9d,transparent 60%);top:40%;left:50%;animation-delay:-13s}
+@keyframes floatBlob{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(60px,-40px) scale(1.1)}
+  66%{transform:translate(-40px,30px) scale(0.95)}
+}
+/* ============ LAYOUT ============ */
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{
+  position:sticky;top:0;height:100vh;
+  background:rgba(15,12,41,0.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-right:1px solid var(--glass-border);
+  padding:24px 16px;display:flex;flex-direction:column;gap:6px;z-index:50;
+}
+.brand{display:flex;align-items:center;gap:12px;padding:8px 10px 22px;border-bottom:1px solid var(--glass-border);margin-bottom:14px}
+.brand-logo{
+  width:42px;height:42px;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;
+  box-shadow:0 4px 18px rgba(127,90,240,0.45)
+}
+.brand-text h1{font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.2px;line-height:1.15}
+.brand-text span{font-size:11px;color:var(--text-muted);letter-spacing:1.4px;text-transform:uppercase}
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;
+  color:var(--text-muted);font-size:14px;font-weight:500;cursor:pointer;
+  transition:all var(--t-fast);position:relative;
+}
+.nav-item .ic{font-size:18px;width:22px;text-align:center}
+.nav-item:hover{background:var(--glass);color:var(--text);transform:translateX(2px)}
+.nav-item.active{
+  background:linear-gradient(90deg,rgba(127,90,240,0.25),rgba(127,90,240,0.05));
+  color:#fff;
+}
+.nav-item.active::before{
+  content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;
+  background:linear-gradient(180deg,var(--primary),var(--accent));
+}
+.sidebar-spacer{flex:1}
+.sound-toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-radius:12px;background:var(--glass);font-size:13px;cursor:pointer;border:1px solid var(--glass-border)}
+.sound-toggle:hover{background:var(--glass-strong)}
+.switch{width:38px;height:20px;background:rgba(0,0,0,0.4);border-radius:10px;position:relative;transition:background var(--t-fast)}
+.switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform var(--t-fast)}
+.switch.on{background:var(--primary-2)}
+.switch.on::after{transform:translateX(18px)}
+.main{padding:28px 36px 60px;max-width:1280px;width:100%;margin:0 auto}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{
+    position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;flex-direction:row;
+    padding:8px;border-right:0;border-top:1px solid var(--glass-border);
+    overflow-x:auto;justify-content:space-around;z-index:100;
+  }
+  .brand,.sidebar-spacer,.sound-toggle{display:none}
+  .nav-item{flex-direction:column;gap:4px;padding:8px;font-size:11px;min-width:64px}
+  .nav-item .ic{font-size:20px}
+  .nav-item.active::before{display:none}
+  .main{padding:18px 14px 90px}
+}
+/* ============ PAGES ============ */
+.page{display:none;animation:fadeUp 0.5s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.page-head{margin-bottom:24px}
+.page-head h2{font-family:'Poppins',sans-serif;font-size:28px;font-weight:700;margin-bottom:6px}
+.page-head p{color:var(--text-muted);font-size:14px;max-width:680px}
+/* ============ GLASS CARD ============ */
+.glass{
+  background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--glass-border);border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+/* ============ DASHBOARD ============ */
+.hero{
+  padding:34px;border-radius:24px;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,rgba(127,90,240,0.30),rgba(44,182,125,0.18),rgba(255,107,157,0.25));
+  border:1px solid var(--glass-border);
+  margin-bottom:28px;
+}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(255,255,255,0.10),transparent 60%);pointer-events:none}
+.hero h2{font-family:'Poppins',sans-serif;font-size:32px;font-weight:800;margin-bottom:10px;background:linear-gradient(90deg,#fff,#c5b6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:rgba(255,255,255,0.85);font-size:15px;max-width:600px;line-height:1.55}
+.hero-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:24px}
+.hero-stat{background:rgba(0,0,0,0.25);border:1px solid var(--glass-border);border-radius:14px;padding:14px 16px}
+.hero-stat .lbl{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+.hero-stat .val{font-family:'Poppins',sans-serif;font-size:24px;font-weight:700;margin-top:4px}
+.hero-stat .val small{font-size:12px;color:var(--text-muted);font-weight:500;margin-left:4px}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-bottom:24px}
+.quick-card{
+  padding:22px;cursor:pointer;transition:all var(--t-med);
+  position:relative;overflow:hidden;
+}
+.quick-card:hover{transform:translateY(-4px);background:var(--glass-strong);border-color:var(--primary)}
+.quick-card .qc-ic{
+  width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));margin-bottom:14px;box-shadow:0 4px 18px rgba(127,90,240,0.4)
+}
+.quick-card h3{font-family:'Poppins',sans-serif;font-size:17px;font-weight:600;margin-bottom:6px}
+.quick-card p{font-size:13px;color:var(--text-muted);line-height:1.5}
+.quick-card .arrow{position:absolute;top:22px;right:22px;color:var(--text-dim);font-size:18px;transition:transform var(--t-med)}
+.quick-card:hover .arrow{transform:translateX(4px);color:var(--primary)}
+.recent-activity{padding:24px}
+.recent-activity h3{font-family:'Poppins',sans-serif;font-size:17px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.activity-list{display:flex;flex-direction:column;gap:10px;max-height:280px;overflow-y:auto;padding-right:6px}
+.activity-list::-webkit-scrollbar{width:6px}
+.activity-list::-webkit-scrollbar-thumb{background:var(--glass-border);border-radius:3px}
+.activity-item{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;
+  background:rgba(0,0,0,0.18);border:1px solid rgba(255,255,255,0.05);font-size:13px;
+}
+.activity-item .ai-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;background:rgba(127,90,240,0.25)}
+.activity-item .ai-txt{flex:1}
+.activity-item .ai-txt b{display:block;font-weight:500}
+.activity-item .ai-txt span{font-size:11px;color:var(--text-muted)}
+.activity-item .ai-score{font-family:'Poppins';font-weight:700;font-size:14px;color:var(--success)}
+.activity-empty{text-align:center;color:var(--text-muted);padding:24px;font-size:13px}
+/* ============ TOPICS ============ */
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.topic-card{
+  padding:24px;cursor:pointer;transition:all var(--t-med);position:relative;overflow:hidden;
+}
+.topic-card::before{
+  content:'';position:absolute;top:0;left:0;width:4px;height:100%;
+  background:var(--topic-color,var(--primary));opacity:0;transition:opacity var(--t-med);
+}
+.topic-card:hover::before,.topic-card.completed::before{opacity:1}
+.topic-card:hover{transform:translateY(-3px);border-color:var(--topic-color,var(--primary))}
+.topic-card .tc-num{
+  font-family:'Poppins';font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--topic-color,var(--primary));
+  text-transform:uppercase;margin-bottom:8px
+}
+.topic-card h3{font-family:'Poppins';font-size:17px;font-weight:600;margin-bottom:8px;line-height:1.3}
+.topic-card p{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin-bottom:14px}
+.topic-card .tc-meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-dim)}
+.topic-card .tc-badge{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
+  background:rgba(127,90,240,0.18);color:#c5b6ff;border:1px solid rgba(127,90,240,0.3)
+}
+.topic-card.completed .tc-badge{background:rgba(52,211,153,0.18);color:#7af7c4;border-color:rgba(52,211,153,0.4)}
+.topic-progress-bar{height:6px;background:rgba(0,0,0,0.3);border-radius:3px;overflow:hidden;margin-top:10px}
+.topic-progress-fill{height:100%;background:linear-gradient(90deg,var(--topic-color,var(--primary)),var(--accent));border-radius:3px;transition:width var(--t-med)}
+.topic-detail{padding:30px}
+.topic-detail-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:24px;flex-wrap:wrap}
+.topic-detail-head h2{font-family:'Poppins';font-size:24px;font-weight:700}
+.topic-detail-head p{color:var(--text-muted);font-size:13px;margin-top:6px;max-width:580px}
+.back-btn{
+  background:var(--glass);border:1px solid var(--glass-border);color:var(--text);
+  padding:9px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;
+  display:inline-flex;align-items:center;gap:8px;transition:all var(--t-fast)
+}
+.back-btn:hover{background:var(--glass-strong);transform:translateX(-2px)}
+.topic-content-block{margin-bottom:24px}
+.topic-content-block h4{
+  font-family:'Poppins';font-size:15px;font-weight:600;color:var(--accent-2);
+  margin-bottom:10px;padding-left:12px;border-left:3px solid var(--accent-2)
+}
+.topic-content-block p{font-size:13.5px;color:rgba(255,255,255,0.85);line-height:1.65;margin-bottom:10px}
+.topic-content-block ul{list-style:none;padding-left:0}
+.topic-content-block ul li{font-size:13px;color:rgba(255,255,255,0.85);line-height:1.6;padding-left:18px;position:relative;margin-bottom:6px}
+.topic-content-block ul li::before{content:'▸';position:absolute;left:0;color:var(--primary)}
+.topic-cta{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.btn{
+  padding:12px 22px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;border:none;
+  display:inline-flex;align-items:center;gap:8px;transition:all var(--t-fast);font-family:inherit;
+}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;box-shadow:0 4px 16px rgba(127,90,240,0.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(127,90,240,0.55)}
+.btn-ghost{background:var(--glass);border:1px solid var(--glass-border);color:var(--text)}
+.btn-ghost:hover{background:var(--glass-strong)}
+.btn-success{background:linear-gradient(135deg,var(--success),var(--primary-2));color:#fff}
+.btn-danger{background:linear-gradient(135deg,var(--danger),#ff8e3c);color:#fff}
+/* ============ QUIZ ============ */
+.quiz-setup{padding:30px;max-width:640px;margin:0 auto}
+.quiz-setup h2{text-align:center;font-family:'Poppins';font-size:24px;font-weight:700;margin-bottom:6px}
+.quiz-setup .sub{text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:28px}
+.setup-group{margin-bottom:22px}
+.setup-group label{display:block;font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px}
+.range-wrap{display:flex;align-items:center;gap:14px}
+.range-wrap input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;background:rgba(0,0,0,0.3);border-radius:3px;outline:none}
+.range-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));cursor:pointer;box-shadow:0 0 10px rgba(127,90,240,0.5)}
+.range-wrap input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));cursor:pointer;border:none}
+.range-val{font-family:'Poppins';font-weight:700;font-size:20px;min-width:50px;text-align:center;color:var(--primary)}
+.option-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.opt-btn{
+  padding:14px;background:rgba(0,0,0,0.25);border:1px solid var(--glass-border);border-radius:12px;
+  cursor:pointer;text-align:center;font-size:13px;font-weight:500;transition:all var(--t-fast);color:var(--text)
+}
+.opt-btn:hover{background:var(--glass-strong);border-color:var(--primary)}
+.opt-btn.sel{background:linear-gradient(135deg,rgba(127,90,240,0.35),rgba(255,107,157,0.25));border-color:var(--primary);color:#fff}
+.quiz-start-btn{width:100%;justify-content:center;padding:14px;margin-top:6px}
+.quiz-active{max-width:780px;margin:0 auto}
+.quiz-topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap
+}
+.quiz-progress{flex:1;min-width:200px}
+.quiz-progress-bar{height:8px;background:rgba(0,0,0,0.3);border-radius:4px;overflow:hidden;margin-bottom:6px}
+.quiz-progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:4px;transition:width var(--t-med)}
+.quiz-progress-text{font-size:12px;color:var(--text-muted)}
+.timer{
+  display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:12px;
+  background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);font-family:'Poppins';font-weight:700;font-size:18px
+}
+.timer.warn{background:rgba(255,179,71,0.18);border-color:var(--warn);color:var(--warn);animation:pulse 1s infinite}
+.timer.danger{background:rgba(255,94,94,0.2);border-color:var(--danger);color:var(--danger);animation:pulse 0.5s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.question-card{padding:30px}
+.difficulty-badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px}
+.difficulty-badge.easy{background:rgba(52,211,153,0.2);color:#7af7c4;border:1px solid rgba(52,211,153,0.4)}
+.difficulty-badge.medium{background:rgba(255,179,71,0.2);color:#ffd29a;border:1px solid rgba(255,179,71,0.4)}
+.difficulty-badge.hard{background:rgba(255,94,94,0.2);color:#ff9b9b;border:1px solid rgba(255,94,94,0.4)}
+.q-topic-badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(127,90,240,0.2);color:#c5b6ff;border:1px solid rgba(127,90,240,0.3);margin-left:8px;margin-bottom:14px}
+.question-text{font-size:17px;font-weight:500;line-height:1.55;margin-bottom:22px}
+.options-list{display:flex;flex-direction:column;gap:10px}
+.option{
+  padding:14px 18px;background:rgba(0,0,0,0.25);border:2px solid var(--glass-border);border-radius:12px;
+  cursor:pointer;transition:all var(--t-fast);font-size:14px;line-height:1.45;display:flex;align-items:center;gap:12px
+}
+.option:hover:not(.disabled){background:var(--glass-strong);border-color:var(--primary);transform:translateX(2px)}
+.option .opt-letter{
+  width:28px;height:28px;border-radius:8px;background:rgba(127,90,240,0.25);display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:13px;flex-shrink:0
+}
+.option.correct{background:rgba(52,211,153,0.18);border-color:var(--success);color:#7af7c4}
+.option.correct .opt-letter{background:var(--success);color:#0f0c29}
+.option.incorrect{background:rgba(255,94,94,0.18);border-color:var(--danger);color:#ff9b9b}
+.option.incorrect .opt-letter{background:var(--danger);color:#0f0c29}
+.option.disabled{cursor:default;opacity:0.85}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:22px}
+.quiz-explanation{
+  margin-top:18px;padding:16px;border-radius:12px;background:rgba(77,208,225,0.08);border-left:4px solid var(--accent-2);
+  font-size:13px;line-height:1.55;color:rgba(255,255,255,0.85);animation:fadeUp 0.3s ease
+}
+.quiz-explanation b{color:var(--accent-2)}
+/* Results */
+.results-card{padding:36px;max-width:760px;margin:0 auto;text-align:center}
+.score-ring{width:140px;height:140px;margin:0 auto 18px;position:relative}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring circle{fill:none;stroke-width:10}
+.score-ring .bg-circle{stroke:rgba(0,0,0,0.3)}
+.score-ring .fg-circle{stroke:url(#scoreGrad);stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.score-ring .score-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-ring .score-text .num{font-family:'Poppins';font-size:34px;font-weight:800}
+.score-ring .score-text .pct{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+.results-card h2{font-family:'Poppins';font-size:24px;font-weight:700;margin-bottom:6px}
+.results-card .sub{color:var(--text-muted);font-size:14px;margin-bottom:24px}
+.results-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin-bottom:24px}
+.metric-box{padding:14px;background:rgba(0,0,0,0.25);border-radius:12px;border:1px solid var(--glass-border)}
+.metric-box .lbl{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px}
+.metric-box .val{font-family:'Poppins';font-size:22px;font-weight:700;margin-top:4px;color:var(--accent-2)}
+.review-list{margin-top:20px;text-align:left}
+.review-list h3{font-family:'Poppins';font-size:15px;font-weight:600;margin-bottom:12px;text-align:center}
+.review-item{padding:14px;border-radius:10px;background:rgba(0,0,0,0.2);margin-bottom:8px;font-size:13px;border-left:3px solid var(--text-dim)}
+.review-item.correct{border-left-color:var(--success)}
+.review-item.incorrect{border-left-color:var(--danger)}
+.review-item .ri-q{font-weight:500;margin-bottom:4px;line-height:1.4}
+.review-item .ri-a{font-size:12px;color:var(--text-muted)}
+.review-item .ri-a b{color:var(--success)}
+.review-item.incorrect .ri-a b{color:var(--danger)}
+/* ============ FLASHCARDS ============ */
+.fc-controls{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.fc-control-group{display:flex;align-items:center;gap:8px}
+.fc-control-group label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600}
+.fc-select{
+  background:var(--glass);border:1px solid var(--glass-border);color:var(--text);padding:8px 12px;border-radius:10px;
+  font-size:13px;cursor:pointer;font-family:inherit
+}
+.fc-select option{background:#1a1448}
+.fc-stats{margin-left:auto;display:flex;gap:14px;font-size:12px;color:var(--text-muted);align-items:center}
+.fc-stats .stat-pill{padding:5px 12px;border-radius:20px;background:var(--glass);border:1px solid var(--glass-border);font-weight:600;color:var(--text)}
+.fc-stats .stat-pill .kn{color:var(--success);font-family:'Poppins'}
+.fc-stats .stat-pill.due .kn{color:var(--warn)}
+.fc-stats .stat-pill.new .kn{color:var(--accent-2)}
+.flashcard-stage{
+  display:flex;flex-direction:column;align-items:center;gap:20px;padding:8px
+}
+.flashcard{
+  width:100%;max-width:560px;height:340px;perspective:1600px;cursor:pointer
+}
+.flashcard-inner{
+  position:relative;width:100%;height:100%;transition:transform 0.7s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d
+}
+.flashcard.flipped .flashcard-inner{transform:rotateY(180deg)}
+.flashcard-face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;
+  border:1px solid var(--glass-border);text-align:center
+}
+.flashcard-front{
+  background:linear-gradient(135deg,rgba(127,90,240,0.30),rgba(255,107,157,0.20));
+}
+.flashcard-back{
+  background:linear-gradient(135deg,rgba(44,182,125,0.25),rgba(77,208,225,0.20));transform:rotateY(180deg)
+}
+.fc-cat{font-family:'Poppins';font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-2);margin-bottom:12px}
+.fc-num{position:absolute;top:18px;right:22px;font-size:11px;color:var(--text-muted);font-weight:600}
+.fc-diff{position:absolute;top:18px;left:22px;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px}
+.fc-diff.easy{background:rgba(52,211,153,0.2);color:#7af7c4}
+.fc-diff.medium{background:rgba(255,179,71,0.2);color:#ffd29a}
+.fc-diff.hard{background:rgba(255,94,94,0.2);color:#ff9b9b}
+.fc-question{font-family:'Poppins';font-size:18px;font-weight:600;line-height:1.45;max-width:420px}
+.fc-answer{font-size:15px;line-height:1.55;color:rgba(255,255,255,0.92);max-width:440px}
+.fc-hint{font-size:11px;color:var(--text-muted);margin-top:16px;letter-spacing:0.5px;text-transform:uppercase}
+.fc-actions{display:flex;gap:12px;align-items:center}
+.fc-actions .btn{padding:10px 18px}
+.fc-rate-group{display:flex;gap:8px;margin-top:6px;justify-content:center;flex-wrap:wrap}
+.fc-rate-btn{
+  padding:8px 14px;border-radius:10px;border:1px solid var(--glass-border);background:var(--glass);
+  font-size:12px;font-weight:600;cursor:pointer;color:var(--text);transition:all var(--t-fast);font-family:inherit
+}
+.fc-rate-btn:hover{background:var(--glass-strong);transform:translateY(-2px)}
+.fc-rate-btn.again{border-color:var(--danger);color:#ff9b9b}
+.fc-rate-btn.hard{border-color:var(--warn);color:#ffd29a}
+.fc-rate-btn.good{border-color:var(--accent-2);color:#a5e8f0}
+.fc-rate-btn.easy{border-color:var(--success);color:#7af7c4}
+.fc-empty{padding:40px;text-align:center;color:var(--text-muted)}
+.fc-empty .ic{font-size:48px;margin-bottom:14px;opacity:0.4}
+.fc-empty p{font-size:14px}
+/* ============ PROGRESS PAGE ============ */
+.progress-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-bottom:22px}
+.stat-card{padding:22px;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,var(--stat-color,var(--primary)),transparent 70%);opacity:0.18}
+.stat-card .ic{font-size:24px;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(127,90,240,0.18);margin-bottom:14px}
+.stat-card .lbl{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+.stat-card .val{font-family:'Poppins';font-size:30px;font-weight:800;margin-top:4px}
+.stat-card .sub{font-size:12px;color:var(--text-dim);margin-top:4px}
+.chart-card{padding:24px;margin-bottom:22px}
+.chart-card h3{font-family:'Poppins';font-size:16px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.chart-wrap{height:200px;display:flex;align-items:flex-end;gap:6px;padding:10px 0;border-bottom:1px solid var(--glass-border)}
+.chart-bar{flex:1;min-width:0;background:linear-gradient(180deg,var(--primary),var(--accent));border-radius:6px 6px 0 0;position:relative;transition:height var(--t-med);min-height:4px}
+.chart-bar:hover::after{content:attr(data-val);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);color:#fff;padding:3px 8px;border-radius:4px;font-size:11px;white-space:nowrap;margin-bottom:4px}
+.topic-progress-list{padding:24px}
+.topic-progress-list h3{font-family:'Poppins';font-size:16px;font-weight:600;margin-bottom:14px}
+.tp-item{margin-bottom:14px}
+.tp-item-head{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.tp-item-head .nm{font-weight:500}
+.tp-item-head .pct{color:var(--text-muted)}
+.tp-bar{height:8px;background:rgba(0,0,0,0.3);border-radius:4px;overflow:hidden}
+.tp-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width var(--t-med)}
+/* ============ CONFETTI ============ */
+#confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:9999;display:none}
+#confettiCanvas.active{display:block}
+/* ============ TOAST ============ */
+#toast{position:fixed;top:24px;right:24px;background:rgba(15,12,41,0.95);backdrop-filter:blur(14px);border:1px solid var(--glass-border);padding:14px 20px;border-radius:12px;font-size:13px;font-weight:500;color:#fff;z-index:1000;opacity:0;transform:translateY(-20px);transition:all var(--t-med);pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,0.5);max-width:320px}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast .ic{margin-right:8px}
+/* ============ LOADER ============ */
+.loader{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay{position:fixed;inset:0;background:rgba(15,12,41,0.85);backdrop-filter:blur(8px);z-index:9998;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.loading-overlay.show{display:flex}
+.loading-overlay .loader{width:48px;height:48px;border-width:4px}
+.loading-overlay p{color:var(--text-muted);font-size:13px}
+/* ============ MISC ============ */
+.icon{width:16px;height:16px;display:inline-block;vertical-align:middle}
+.divider{height:1px;background:var(--glass-border);margin:18px 0}
+.hint-box{padding:14px;border-radius:12px;background:rgba(127,90,240,0.08);border-left:4px solid var(--primary);font-size:13px;color:rgba(255,255,255,0.85);margin-bottom:18px;line-height:1.55}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:rgba(0,0,0,0.2)}
+::-webkit-scrollbar-thumb{background:var(--glass-border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.25)}
+@media (max-width:600px){
+  .hero h2{font-size:24px}
+  .page-head h2{font-size:22px}
+  .question-card,.quiz-setup,.results-card,.topic-detail{padding:20px}
+  .flashcard{height:300px}
+  .fc-question{font-size:16px}
+  .main{padding:14px 12px 90px}
+}
+
+/* ============================================
+   ENHANCED DESIGN ELEMENTS (10+ new)
+   ============================================ */
+
+/* 1. Pulse animation on brand logo */
+.brand-logo{position:relative;overflow:hidden}
+.brand-logo::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,0.4),transparent 70%);animation:pulseGlow 2.5s ease-in-out infinite}
+@keyframes pulseGlow{0%,100%{opacity:0.3;transform:scale(0.95)}50%{opacity:0.7;transform:scale(1.15)}}
+
+/* 2. Streak counter widget (sidebar) */
+.streak-widget{
+  padding:14px;border-radius:14px;background:linear-gradient(135deg,rgba(255,107,157,0.18),rgba(255,179,71,0.18));
+  border:1px solid rgba(255,179,71,0.3);margin-bottom:12px;position:relative;overflow:hidden
+}
+.streak-widget::before{content:'🔥';position:absolute;top:-6px;right:-6px;font-size:32px;opacity:0.18;transform:rotate(15deg)}
+.streak-widget .sw-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px}
+.streak-widget .sw-value{font-family:'Poppins';font-size:22px;font-weight:800;margin-top:2px;color:var(--warn)}
+.streak-widget .sw-value small{font-size:11px;color:var(--text-muted);font-weight:500;margin-left:4px}
+.streak-flames{display:flex;gap:3px;margin-top:8px}
+.streak-flame{width:6px;height:14px;background:rgba(255,179,71,0.2);border-radius:3px;transition:all var(--t-med)}
+.streak-flame.lit{background:linear-gradient(180deg,var(--warn),var(--accent));box-shadow:0 0 6px var(--warn);animation:flameFlicker 1.5s ease-in-out infinite}
+@keyframes flameFlicker{0%,100%{opacity:1}50%{opacity:0.7}}
+
+/* 3. Achievement badges section */
+.badges-section{padding:24px;margin-bottom:22px}
+.badges-section h3{font-family:'Poppins';font-size:17px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px}
+.badge{
+  padding:18px 12px;border-radius:14px;text-align:center;background:rgba(0,0,0,0.25);
+  border:1px solid var(--glass-border);transition:all var(--t-med);position:relative;overflow:hidden;cursor:pointer
+}
+.badge:hover{transform:translateY(-3px);background:rgba(0,0,0,0.4)}
+.badge.unlocked{border-color:var(--badge-color,var(--primary));background:linear-gradient(135deg,rgba(127,90,240,0.18),rgba(255,107,157,0.12))}
+.badge.unlocked::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);animation:shimmer 3s infinite}
+@keyframes shimmer{0%{left:-100%}50%,100%{left:100%}}
+.badge .b-icon{font-size:32px;margin-bottom:8px;display:block;filter:grayscale(1);opacity:0.4}
+.badge.unlocked .b-icon{filter:grayscale(0);opacity:1}
+.badge .b-name{font-size:11px;font-weight:600;color:var(--text-muted);line-height:1.3}
+.badge.unlocked .b-name{color:var(--text)}
+.badge .b-desc{font-size:10px;color:var(--text-dim);margin-top:3px;line-height:1.3}
+
+/* 4. Quick search bar */
+.search-bar{
+  position:relative;margin-bottom:20px
+}
+.search-bar input{
+  width:100%;padding:13px 18px 13px 46px;border-radius:14px;background:var(--glass);
+  border:1px solid var(--glass-border);color:var(--text);font-size:14px;font-family:inherit;
+  backdrop-filter:blur(14px);transition:all var(--t-fast)
+}
+.search-bar input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(127,90,240,0.2)}
+.search-bar input::placeholder{color:var(--text-dim)}
+.search-bar .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:16px;pointer-events:none}
+.search-bar .clear-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:var(--glass);border:none;color:var(--text-muted);width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:14px;display:none}
+.search-bar.has-text .clear-btn{display:flex;align-items:center;justify-content:center}
+
+/* 5. Daily study timer (sidebar) */
+.session-widget{
+  padding:12px 14px;border-radius:12px;background:rgba(77,208,225,0.10);
+  border:1px solid rgba(77,208,225,0.25);margin-bottom:12px
+}
+.session-widget .sw-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px}
+.session-widget .sw-value{font-family:'Poppins';font-size:18px;font-weight:700;margin-top:2px;color:var(--accent-2)}
+.session-widget .sw-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-2);margin-right:5px;animation:dotPulse 1.5s infinite}
+@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* 6. Animated counters */
+.counter-val{display:inline-block}
+
+/* 7. Weekly calendar heatmap */
+.calendar-heatmap{padding:24px;margin-bottom:22px}
+.calendar-heatmap h3{font-family:'Poppins';font-size:16px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.heatmap-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.heatmap-day{
+  aspect-ratio:1;border-radius:8px;background:rgba(0,0,0,0.25);border:1px solid var(--glass-border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;cursor:pointer;
+  transition:all var(--t-fast);padding:6px
+}
+.heatmap-day:hover{transform:scale(1.05);z-index:5}
+.heatmap-day .hm-date{font-size:10px;color:var(--text-dim);font-weight:600}
+.heatmap-day .hm-count{font-family:'Poppins';font-size:14px;font-weight:700;margin-top:2px}
+.heatmap-day[data-level="1"]{background:rgba(127,90,240,0.18);border-color:rgba(127,90,240,0.3)}
+.heatmap-day[data-level="2"]{background:rgba(127,90,240,0.35);border-color:rgba(127,90,240,0.5)}
+.heatmap-day[data-level="3"]{background:rgba(127,90,240,0.55);border-color:var(--primary)}
+.heatmap-day[data-level="4"]{background:linear-gradient(135deg,var(--primary),var(--accent));border-color:var(--accent)}
+.heatmap-day[data-level="4"] .hm-date,.heatmap-day[data-level="4"] .hm-count{color:#fff}
+.heatmap-day.today{box-shadow:0 0 0 2px var(--accent-2)}
+.heatmap-legend{display:flex;align-items:center;gap:6px;margin-top:14px;font-size:11px;color:var(--text-muted)}
+.heatmap-legend .swatch{width:14px;height:14px;border-radius:3px;border:1px solid var(--glass-border)}
+.heatmap-legend .swatch.l0{background:rgba(0,0,0,0.25)}
+.heatmap-legend .swatch.l1{background:rgba(127,90,240,0.18)}
+.heatmap-legend .swatch.l2{background:rgba(127,90,240,0.35)}
+.heatmap-legend .swatch.l3{background:rgba(127,90,240,0.55)}
+.heatmap-legend .swatch.l4{background:linear-gradient(135deg,var(--primary),var(--accent))}
+
+/* 8. Floating Action Button (FAB) */
+.fab{
+  position:fixed;bottom:30px;right:30px;width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border:none;cursor:pointer;
+  font-size:24px;z-index:200;box-shadow:0 8px 24px rgba(127,90,240,0.5),0 0 0 0 rgba(127,90,240,0.4);
+  display:flex;align-items:center;justify-content:center;transition:all var(--t-med);
+  animation:fabPulse 2.5s infinite
+}
+.fab:hover{transform:scale(1.1) rotate(15deg);box-shadow:0 12px 32px rgba(127,90,240,0.65)}
+.fab .fab-label{
+  position:absolute;right:65px;top:50%;transform:translateY(-50%) translateX(10px);
+  background:rgba(15,12,41,0.95);padding:8px 14px;border-radius:10px;font-size:12px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:all var(--t-med);border:1px solid var(--glass-border)
+}
+.fab:hover .fab-label{opacity:1;transform:translateY(-50%) translateX(0)}
+@keyframes fabPulse{0%{box-shadow:0 8px 24px rgba(127,90,240,0.5),0 0 0 0 rgba(127,90,240,0.5)}70%{box-shadow:0 8px 24px rgba(127,90,240,0.5),0 0 0 14px rgba(127,90,240,0)}100%{box-shadow:0 8px 24px rgba(127,90,240,0.5),0 0 0 0 rgba(127,90,240,0)}}
+@media (max-width:900px){.fab{bottom:80px;right:18px;width:48px;height:48px;font-size:20px}.fab .fab-label{display:none}}
+
+/* 9. Donut chart for difficulty distribution */
+.donut-card{padding:24px;margin-bottom:22px}
+.donut-card h3{font-family:'Poppins';font-size:16px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.donut-chart{position:relative;width:180px;height:180px;flex-shrink:0}
+.donut-chart svg{transform:rotate(-90deg)}
+.donut-chart .donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.donut-chart .donut-center .num{font-family:'Poppins';font-size:24px;font-weight:800}
+.donut-chart .donut-center .lbl{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px}
+.donut-legend{flex:1;min-width:140px}
+.donut-legend-item{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px}
+.donut-legend-item .sw{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.donut-legend-item .nm{flex:1}
+.donut-legend-item .vl{font-family:'Poppins';font-weight:700}
+
+/* 10. Milestone celebration modal */
+.milestone-modal{
+  position:fixed;inset:0;background:rgba(15,12,41,0.85);backdrop-filter:blur(12px);z-index:5000;
+  display:none;align-items:center;justify-content:center;padding:20px;animation:fadeUp 0.4s ease
+}
+.milestone-modal.show{display:flex}
+.milestone-content{
+  background:linear-gradient(135deg,rgba(127,90,240,0.25),rgba(255,107,157,0.18),rgba(44,182,125,0.18));
+  border:1px solid var(--glass-border);border-radius:24px;padding:40px 30px;max-width:420px;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative;animation:popIn 0.5s cubic-bezier(.34,1.56,.64,1)
+}
+@keyframes popIn{from{transform:scale(0.7);opacity:0}to{transform:scale(1);opacity:1}}
+.milestone-content .ms-icon{font-size:64px;margin-bottom:14px;display:inline-block;animation:bounce 1s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.milestone-content h2{font-family:'Poppins';font-size:24px;font-weight:800;margin-bottom:8px;background:linear-gradient(90deg,#fff,#c5b6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.milestone-content p{color:rgba(255,255,255,0.85);font-size:14px;line-height:1.55;margin-bottom:24px}
+.milestone-content .ms-close{padding:12px 28px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:all var(--t-fast)}
+.milestone-content .ms-close:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(127,90,240,0.5)}
+
+/* 11. Ambient particles in hero */
+.hero-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-particle{position:absolute;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);animation:floatUp linear infinite}
+@keyframes floatUp{from{transform:translateY(100%);opacity:0}10%{opacity:1}90%{opacity:1}to{transform:translateY(-100%);opacity:0}}
+
+/* 12. Gradient animated title */
+.gradient-title{
+  background:linear-gradient(90deg,#fff 0%,#c5b6ff 25%,#ff6b9d 50%,#4dd0e1 75%,#fff 100%);
+  background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:gradientShift 6s linear infinite
+}
+@keyframes gradientShift{0%{background-position:0% center}100%{background-position:200% center}}
+
+/* 13. Topic difficulty badges in topic cards */
+.topic-card .tc-streak{
+  position:absolute;top:18px;right:18px;font-size:11px;color:var(--text-dim);
+  display:flex;align-items:center;gap:4px
+}
+
+</style>
+</head>
+<body>
+<div class="bg-anim"></div>
+<div class="bg-blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<!-- SVG gradient def for score ring -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7f5af0"/>
+      <stop offset="100%" stop-color="#ff6b9d"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12h3l2-7 4 14 3-7h2l1.5 3H22"/>
+        </svg>
+      </div>
+      <div class="brand-text"><h1>Critical Care</h1><span>Nursing Learning</span></div>
+    </div>
+    <div class="nav-item active" data-page="dashboard"><span class="ic">⊞</span>Dashboard</div>
+    <div class="nav-item" data-page="topics"><span class="ic">▤</span>Topics</div>
+    <div class="nav-item" data-page="quiz"><span class="ic">?</span>Quiz</div>
+    <div class="nav-item" data-page="flashcards"><span class="ic">▤</span>Flashcards</div>
+    <div class="nav-item" data-page="progress"><span class="ic">📈</span>Progress</div>
+    <div class="sidebar-spacer"></div>
+    <div class="streak-widget" id="streakWidget">
+      <div class="sw-label">Study Streak</div>
+      <div class="sw-value" id="streakValue">0<small>days</small></div>
+      <div class="streak-flames" id="streakFlames"></div>
+    </div>
+    <div class="session-widget">
+      <div class="sw-label"><span class="sw-dot"></span>Session Time</div>
+      <div class="sw-value" id="sessionTime">00:00</div>
+    </div>
+    <div class="sound-toggle" id="soundToggle">
+      <span><span class="ic">🔊</span> Sound</span>
+      <div class="switch on" id="soundSwitch"></div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+    <!-- DASHBOARD -->
+    <section class="page active" id="page-dashboard">
+      <div class="hero">
+        <div class="hero-particles" id="heroParticles"></div>
+        <h2 class="gradient-title">Welcome to Critical Care Nursing Learning Platform</h2>
+        <p>Master critical care nursing concepts through interactive topics, adaptive quizzes, and smart flashcards. Built around your course's eight core modules — from ICU design to cardiac dysrhythmias.</p>
+        <div class="hero-stats" id="heroStats">
+          <div class="hero-stat"><div class="lbl">Topics</div><div class="val" id="hs-topics">8</div></div>
+          <div class="hero-stat"><div class="lbl">Quizzes Taken</div><div class="val counter-val" id="hs-quizzes">0</div></div>
+          <div class="hero-stat"><div class="lbl">Avg Score</div><div class="val" id="hs-avg">—<small>%</small></div></div>
+          <div class="hero-stat"><div class="lbl">Cards Studied</div><div class="val counter-val" id="hs-cards">0</div></div>
+        </div>
+      </div>
+      <div class="glass badges-section">
+        <h3>🏆 Achievement Badges</h3>
+        <div class="badges-grid" id="badgesGrid"></div>
+      </div>
+      <div class="dash-grid">
+        <div class="glass quick-card" data-nav="topics"><div class="qc-ic">▤</div><h3>Topics</h3><p>Explore 8 critical care modules with visual progress tracking.</p><span class="arrow">→</span></div>
+        <div class="glass quick-card" data-nav="quiz"><div class="qc-ic">?</div><h3>Quiz</h3><p>80 MCQs with timer, difficulty levels, and detailed explanations.</p><span class="arrow">→</span></div>
+        <div class="glass quick-card" data-nav="flashcards"><div class="qc-ic">▤</div><h3>Flashcards</h3><p>80 cards with flip animation and spaced-repetition marking.</p><span class="arrow">→</span></div>
+        <div class="glass quick-card" data-nav="progress"><div class="qc-ic">📈</div><h3>Progress</h3><p>Track accuracy, time, and historical performance over time.</p><span class="arrow">→</span></div>
+      </div>
+      <div class="glass recent-activity">
+        <h3>🕘 Recent Activity</h3>
+        <div class="activity-list" id="activityList">
+          <div class="activity-empty">No activity yet. Start a quiz or flashcard session to see your progress here.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICS LIST -->
+    <section class="page" id="page-topics">
+      <div class="page-head">
+        <h2 class="gradient-title">Topic Organization & Mapping</h2>
+        <p>Eight core modules mapped to your critical care nursing curriculum. Select a topic to view learning content, related quiz items, and flashcards.</p>
+      </div>
+      <div class="search-bar" id="topicSearchBar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="topicSearchInput" placeholder="Search topics by name, code, or keyword (e.g., 'nutrition', 'ECG', 'ethics')..." />
+        <button class="clear-btn" onclick="document.getElementById('topicSearchInput').value='';filterTopics()">✕</button>
+      </div>
+      <div class="topic-grid" id="topicGrid"></div>
+    </section>
+
+    <!-- TOPIC DETAIL -->
+    <section class="page" id="page-topic-detail">
+      <div id="topicDetailContainer"></div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="page" id="page-quiz">
+      <div id="quizContainer"></div>
+    </section>
+
+    <!-- FLASHCARDS -->
+    <section class="page" id="page-flashcards">
+      <div class="page-head">
+        <h2>Flashcards</h2>
+        <p>Flip cards to reveal answers. Mark difficulty for spaced repetition. Use category filter to focus your study.</p>
+      </div>
+      <div class="fc-controls">
+        <div class="fc-control-group">
+          <label>Category</label>
+          <select class="fc-select" id="fcCategory"><option value="all">All Categories</option></select>
+        </div>
+        <div class="fc-control-group">
+          <label>Difficulty</label>
+          <select class="fc-select" id="fcDifficulty">
+            <option value="all">All</option>
+            <option value="new">New</option>
+            <option value="again">Re-learn</option>
+            <option value="hard">Hard</option>
+            <option value="good">Good</option>
+            <option value="easy">Easy</option>
+          </select>
+        </div>
+        <div class="fc-stats">
+          <span class="stat-pill new">New: <span class="kn" id="fcStatNew">0</span></span>
+          <span class="stat-pill due">Due: <span class="kn" id="fcStatDue">0</span></span>
+          <span class="stat-pill">Mastered: <span class="kn" id="fcStatKnown">0</span></span>
+        </div>
+      </div>
+      <div class="flashcard-stage" id="flashcardStage"></div>
+    </section>
+
+    <!-- PROGRESS -->
+    <section class="page" id="page-progress">
+      <div class="page-head">
+        <h2 class="gradient-title">Performance Tracking</h2>
+        <p>Comprehensive view of your learning journey with score trends, accuracy metrics, and topic mastery.</p>
+      </div>
+      <div class="progress-grid" id="progressStats"></div>
+      <div class="glass chart-card">
+        <h3>📊 Score History</h3>
+        <div class="chart-wrap" id="scoreChart"></div>
+      </div>
+      <div class="glass calendar-heatmap">
+        <h3>📅 Weekly Study Activity (Last 7 Days)</h3>
+        <div class="heatmap-grid" id="heatmapGrid"></div>
+        <div class="heatmap-legend">
+          <span>Less</span>
+          <div class="swatch l0"></div>
+          <div class="swatch l1"></div>
+          <div class="swatch l2"></div>
+          <div class="swatch l3"></div>
+          <div class="swatch l4"></div>
+          <span>More</span>
+          <span style="margin-left:auto;color:var(--text-dim)">Total this week: <b id="weekTotal" style="color:var(--text)">0</b> activities</span>
+        </div>
+      </div>
+      <div class="glass donut-card">
+        <h3>🎯 Quiz Difficulty Distribution</h3>
+        <div class="donut-wrap" id="donutWrap">
+          <div class="donut-chart" id="donutChart"></div>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
+      </div>
+      <div class="glass topic-progress-list">
+        <h3>Topic Mastery</h3>
+        <div id="topicProgressList"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<button class="fab" id="fabBtn" title="Quick Quiz">
+  <span class="fab-label">Take a Quick Quiz</span>
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 9c0-1.7 1.3-3 3-3s3 1.3 3 3-1.5 2.5-3 3.5c-.7.5-1 1.2-1 2v.5"/><circle cx="12" cy="18" r="0.5" fill="#fff"/></svg>
+</button>
+
+<div class="milestone-modal" id="milestoneModal">
+  <div class="milestone-content">
+    <div class="ms-icon" id="msIcon">🎉</div>
+    <h2 id="msTitle">Milestone Reached!</h2>
+    <p id="msDesc">Congratulations on your achievement. Keep up the great work!</p>
+    <button class="ms-close" onclick="closeMilestone()">Continue Learning</button>
+  </div>
+</div>
+
+<canvas id="confettiCanvas"></canvas>
+<div id="toast"></div>
+<div class="loading-overlay" id="loadingOverlay"><div class="loader"></div><p id="loadingText">Loading…</p></div>
+
+<script>
+/* ============================================
+   DATA: TOPICS, QUESTIONS, FLASHCARDS
+   ============================================ */
+const TOPICS = [
+  {id:1, code:"T1", title:"ICU Design & Critical Care Nursing Scope", color:"#7f5af0",
+    summary:"Critical care unit design, AACN definition, and the foundational scope of critical care nursing practice.",
+    pages:"Hamilton et al., 2025; Urden 2022 Ch1",
+    content:[
+      {h:"ICU Layout Principles", t:"p", txt:"Critical care unit design must ensure sufficient space for appropriate bedside care. ICU layouts should emphasize high patient visibility for early detection of clinical deterioration and rapid team response."},
+      {h:"Key Layout Recommendations", t:"ul", items:["Single-patient rooms rather than open-bay layouts to enhance infection control, patient/family satisfaction, and privacy","Decentralized staff charting areas to remain closer to patients, reducing response times","Locate critical care units as close as possible to frequently used departments to reduce transport time and adverse events"]},
+      {h:"Room Design", t:"ul", items:["Incorporate natural lighting and circadian lighting to reduce sleep disruption","Window views and natural lighting reduce mortality, delirium, and ICU length of stay","Use noise-reduction strategies (e.g., sound-absorbing tiles)","Either in-room or centralized supply rooms may be used for bedside care"]},
+      {h:"Infection Control", t:"p", txt:"ICUs should incorporate advanced infection prevention features such as antimicrobial surfaces, dedicated PPE donning/doffing spaces, handwashing sink designs, and cleaning protocols. HVAC systems (standard or advanced) prevent airborne, water-borne, and surface-borne transmission."},
+      {h:"AACN Definition", t:"p", txt:"Critical care nursing is \"the specialty that manages human responses to actual or potential life-threatening problems.\" Nurses rely on specialized knowledge to restore, support, and maintain physiologic and psychosocial stability of patients across the life span."},
+      {h:"Infrastructure & Staff Space", t:"ul", items:["Capacity for monitoring and controlling devices outside patient rooms for flexibility and safety","Tele-ICU programs may reduce mortality and ICU length of stay","Plan for surge capacity including equipment, staff, and ICU physical infrastructure","Use ergonomic designs for staff workspaces to reduce injury and fatigue","Include dedicated staff break rooms with natural light and respite spaces"]}
+    ]},
+  {id:2, code:"T2", title:"Synergy Model & Impact of Critical Illness", color:"#2cb67d",
+    summary:"The Synergy Model linking patient characteristics with nurse competencies, plus the patient and family impact of critical illness.",
+    pages:"Morton & Fontaine 2018 Ch1-3",
+    content:[
+      {h:"Synergy Model Premises", t:"p", txt:"The Synergy Model describes nursing practice based on patients' characteristics. Eight patient characteristics and eight nurse competencies form the basis. When patients' characteristics and nurses' competencies match and synergize, outcomes are optimal."},
+      {h:"Eight Patient Characteristics", t:"ul", items:["Resiliency: capacity to return to restorative functioning","Vulnerability: susceptibility to stressors","Stability: ability to maintain steady-state equilibrium","Complexity: intricate entanglement of systems","Resource Availability: extent of resources brought to situation","Participation in Care: engagement in aspects of care","Participation in Decision Making: engagement in decisions","Predictability: course of illness expectation"]},
+      {h:"Eight Nurse Competencies", t:"ul", items:["Clinical Judgment: clinical reasoning and decision-making","Advocacy and Moral Agency","Caring Practices","Collaboration","Systems Thinking","Response to Diversity","Facilitation of Learning","Clinical Inquiry"]},
+      {h:"Patient's Experience", t:"p", txt:"ICU admission may signify threat to life. Patients often perceive critical care as impending death. Negative experiences relate to fear, anxiety, sleep disturbance, cognitive impairment, pain. Positive experiences relate to safety and security."},
+      {h:"Nursing Interventions - Sleep", t:"ul", items:["Provide large clocks and calendars","Block sleep times; quiet time during day shift","Use earplugs and eye masks","Music therapy, white noise, ocean sounds","5-minute backrub before sleep; eliminate pain","Relaxation, mindfulness, guided imagery"]},
+      {h:"Family in Crisis", t:"p", txt:"Critical illness threatens family equilibrium, forcing members into decision-maker roles. Nursing interventions include guiding family to identify strengths, providing realistic information, allowing control through choices, and recognizing spirituality."}
+    ]},
+  {id:3, code:"T3", title:"Nutritional Management in Critical Care", color:"#4dd0e1",
+    summary:"Pathophysiology of nutrition, screening, enteral/parenteral nutrition, glycemic control, and refeeding syndrome.",
+    pages:"Peate & Hill 2023 Ch23",
+    content:[
+      {h:"Why Nutrition Matters", t:"p", txt:"Up to 55% of critically ill patients are malnourished on admission. Nutritional support aims to attenuate detrimental effects like increased energy deficit and catabolism, improving outcomes and preventing malnutrition."},
+      {h:"Stress Response Phases", t:"ul", items:["Fight-or-Flight: sympathetic activation, catecholamine release, glycogenolysis","Resistance Phase: cortisol, growth hormone, thyroid hormones; gluconeogenesis","Exhaustion Phase: glucose depletion, muscle breakdown, immune suppression","Ebb Phase (0-24h): oxygen/glucose to vital organs","Flow Phase: hypermetabolic, catabolic state, rapid weight loss"]},
+      {h:"Screening & Assessment", t:"p", txt:"All hospitalized patients should be screened for malnutrition using MUST. Critically ill patients require weekly screening. Indirect calorimetry (IC) is unreliable in critical care due to metabolic disturbances, high O2 concentrations, and ventilator air leakage — metabolic equations are used instead."},
+      {h:"Enteral Nutrition (EN)", t:"p", txt:"Preferred route when GI tract is functional. Early EN within 24-48 hours. Reduces mortality, preserves gut mucosal integrity, prevents bacterial translocation. May cause intolerance (vomiting, regurgitation, distention, diarrhea). Manage by starting small, elevating bed 30-45°, using prokinetics, monitoring GRV."},
+      {h:"Parenteral Nutrition (PN)", t:"p", txt:"Nutrients provided directly into central vein when EN is not feasible or fails to meet caloric needs. After 7-10 days if patient has not met 60% of energy target with EN. Requires strict aseptic technique and regular glucose/electrolyte monitoring."},
+      {h:"Glycemic Control & Refeeding", t:"ul", items:["Target blood glucose: 140-180 mg/dL for critically ill","Insulin infusion initiated when glucose > 180 mg/dL","Refeeding syndrome: serious electrolyte disturbance when nutrition reintroduced to starved patients","Start feed at no more than 50% for first 2 days to combat refeeding risk","Supplements of potassium, phosphate, magnesium may be required"]}
+    ]},
+  {id:4, code:"T4", title:"Pain Assessment & Management", color:"#ff6b9d",
+    summary:"Definition and components of pain, subjective and objective assessment tools (CPOT, PQRSTUV), and pharmacologic/nonpharmacologic management.",
+    pages:"Urden 2022 Ch8; Morton 2018 Ch5",
+    content:[
+      {h:"Definition of Pain", t:"p", txt:"Pain is a distressing experience associated with actual or potential tissue damage with sensory, emotional, cognitive, and social/behavioral components. Pain is subjective — it is whatever the person experiencing it says it is, existing whenever they say it does."},
+      {h:"Five Components of Pain", t:"ul", items:["Sensory: perception of intensity, location, quality","Emotional: unpleasantness, distress, anxiety, fear","Cognitive: interpretation/meaning of pain","Behavioral: behaviors to express, avoid, or control pain","Physiologic: nociception and stress response"]},
+      {h:"Subjective Assessment - PQRSTUV", t:"ul", items:["P: Provocative/palliative/aggravating factors","Q: Quality (dull, aching, sharp, burning, stabbing)","R: Region/location/radiation","S: Severity and other symptoms","T: Timing — onset, duration, frequency","U: Understanding — cognitive experience","V: Values — preferences for treatment"]},
+      {h:"Objective Assessment - CPOT", t:"p", txt:"Critical-Care Pain Observation Tool scores 4 indicators (Facial Expression, Body Movements, Compliance with ventilator OR Vocalization, Muscle Tension), each 0-2. Maximum score is 8. Used when patient cannot self-report."},
+      {h:"Pharmacologic Management", t:"p", txt:"Two categories: Opioid Agonists (Morphine, Fentanyl, Hydromorphone, Meperidine, Codeine, Methadone) and Nonopioids (Acetaminophen, NSAIDs, Ketamine, Lidocaine, Anticonvulsants, Antidepressants). Use lowest effective doses via multimodal approach."},
+      {h:"Nonpharmacologic & Respiratory Depression", t:"ul", items:["Physical: massage, ice therapy","Cognitive-behavioral: relaxation, breathing, music","Respiratory depression is most life-threatening opioid side effect","Signs: RR <8-10, ↓SpO2, ↑ETCO2, altered LOC","Reversal: naloxone (opioid antagonist)","Snoring = warning sign of airway obstruction"]}
+    ]},
+  {id:5, code:"T5", title:"Sedation, Agitation & Delirium Management", color:"#ffb347",
+    summary:"RASS scale, sedation levels, agitation management, delirium subtypes, CAM-ICU assessment, and the ABCDEF Liberation Bundle.",
+    pages:"Urden 2022 Ch9; Peate 2023 Ch15",
+    content:[
+      {h:"Sedation Levels & RASS", t:"p", txt:"Richmond Agitation-Sedation Scale ranges from +4 (combative) to -5 (unresponsive). Current guidelines recommend light sedation (RASS -1) for mechanically ventilated patients. Levels: light, moderate, deep sedation, and general anesthesia."},
+      {h:"Sedation Agents", t:"ul", items:["Benzodiazepines: Diazepam, Lorazepam, Midazolam","Sedative-hypnotics: Propofol","Central alpha-2 agonists: Dexmedetomidine","Nonbenzodiazepines preferred over benzodiazepines in mechanically ventilated adults","Analgesia-first sedation suggested for intubated patients"]},
+      {h:"Daily Sedation Interruption", t:"p", txt:"To avoid sedative dependence, turn off sedative infusions once daily (sedation vacation / Spontaneous Awakening Trial - SAT). Monitor carefully; assess consciousness using RASS or SAS. Restart at lower dose if patient becomes agitated or vitals destabilize."},
+      {h:"Agitation Management", t:"p", txt:"Agitation ranges from restlessness to physical aggression. Causes include pain, anxiety, delirium, hypoxia, ventilator dyssynchrony, neurologic injury, full bladder, sleep deprivation, alcohol withdrawal, sepsis. Goal is treating the cause, not overmedicating."},
+      {h:"Delirium - Three Subtypes", t:"ul", items:["Hyperactive: agitated, paranoid — well recognized","Hypoactive: withdrawn, quiet — often misdiagnosed as depression","Mixed: combination of hyperactive and hypoactive","Greater than 50% of mechanically ventilated patients experience delirium","Delirium increases hospital stay and mortality rates"]},
+      {h:"CAM-ICU & ABCDEF Bundle", t:"ul", items:["CAM-ICU: 4 criteria — acute change/fluctuation, inattention, altered LOC, disorganized thinking","A: Assess, prevent, manage pain","B: Both SAT and SBT","C: Choice of analgesia and sedation","D: Delirium assessment, prevention, management","E: Early mobility and exercise","F: Family engagement and empowerment"]}
+    ]},
+  {id:6, code:"T6", title:"Legal & Ethical Considerations", color:"#a78bfa",
+    summary:"Ethical principles, common critical care ethical issues, and the four-step case method for ethical decision-making.",
+    pages:"Morton & Fontaine 2018 Ch7",
+    content:[
+      {h:"Six Ethical Principles", t:"ul", items:["Autonomy: right to self-determination; informed consent","Beneficence: avoid harm and promote benefit","Nonmaleficence: avoid unnecessary physical/psychological harm","Veracity: truth-telling about diagnosis, risks, benefits","Fidelity: duty to keep promises and commitments","Justice: distributive justice — fair resource allocation"]},
+      {h:"Ethical Issues in Critical Care", t:"ul", items:["End-of-life treatment decisions","Futility","Truth-telling","Do Not Resuscitate (DNR)","Informed consent","Harvesting and allocating organs","Assisted suicide","Use of aggressive measures","Resource allocation","Conflict among colleagues","Clinical research with critically ill patients"]},
+      {h:"Case Method Approach (4 Steps)", t:"ul", items:["Step 1: Assessing the problem — identify ethical issue, gather medical/social info, check competency","Step 2: Defining the issues — explicate and rank ethical considerations, use literature/policies","Step 3: Goal setting, decision making, implementing — weigh options, ethics consult if needed","Step 4: Evaluating and modifying actions — reflect, address missed opportunities, learn"]},
+      {h:"Institutional Support", t:"p", txt:"Ethics committees (physicians, nurses, social workers, counselors, legal counsel, administrators, community members) provide consultation and education. Ethics rounds and conferences allow early identification of clinical, social, or ethical problems and build trusting interdisciplinary relationships."}
+    ]},
+  {id:7, code:"T7", title:"Acute Coronary Syndrome & Cardiac Surgery", color:"#f87171",
+    summary:"ACS classification (unstable angina, STEMI, NSTEMI), pharmacologic therapy, CABG surgery, grafts, and phases of cardiac surgery.",
+    pages:"Morton & Fontaine 2018 Ch21-22",
+    content:[
+      {h:"What is ACS?", t:"p", txt:"Acute Coronary Syndrome describes patients with clinical symptoms of acute myocardial ischemia/infarction due to abrupt reduction in coronary blood flow. Includes unstable angina, STEMI, and NSTEMI."},
+      {h:"ACS Classification", t:"ul", items:["Unstable Angina: no ST changes, no biomarkers","STEMI: ST segment elevation on ECG, biomarkers detected","NSTEMI: no ST elevation, biomarkers released indicating necrosis","Intensive care goals: maximize cardiac output, minimize workload","Continuous cardiac monitoring with ST-segment monitoring"]},
+      {h:"Pharmacologic Therapy for ACS", t:"ul", items:["Daily aspirin continued","Clopidogrel added for STEMI, continued 14 days","β-blockers and ACE inhibitors within first 24 hours","Atropine, Lidocaine, Amiodarone for dysrhythmias","Insulin infusion to normalize blood glucose in STEMI","Lipid management therapy if indicated"]},
+      {h:"CABG Surgery", t:"p", txt:"Coronary Artery Bypass Graft uses native vessels/conduits harvested during initial surgery to reroute blood past diseased coronary arteries. Most common approach is median sternotomy. Cardiopulmonary bypass machine oxygenates and circulates blood while heart is still."},
+      {h:"Graft Types", t:"ul", items:["Saphenous vein grafts: longest vein in body, ~50% occluded after 10 years","Internal mammary artery grafts: 90% patent at 10 years, less atherosclerosis","LIMA or RIMA can be used; both together risks sternal wound infection in DM/obese","Aspirin post-op indefinitely prevents early saphenous vein closure","Failure causes: thrombosis, atherosclerosis, fibrointimal hyperplasia"]},
+      {h:"Phases & Post-op Care", t:"ul", items:["Preoperative: medical history, exam, ECG, labs, psychological prep, ICU tour","Intraoperative: median sternotomy, CPB machine, heparin, hypothermia 28-32°C","Heparin reversed by protamine sulfate","Postoperative priorities: monitor rhythm, chest tubes, rewarm, control pain, prevent SIRS","Chest tube output >200 mL/h needs intervention; >500 mL/h is surgical bleeding"]}
+    ]},
+  {id:8, code:"T8", title:"Cardiac Dysrhythmias & ECG Interpretation", color:"#34d399",
+    summary:"Cardiac conduction system, ECG waveforms and intervals, sinus/atrial/ventricular dysrhythmias, and electrical therapy.",
+    pages:"Morton & Fontaine 2018 Ch16-17",
+    content:[
+      {h:"Conduction System", t:"p", txt:"SA node (60-100 bpm) is normal pacemaker. AV node (40-60 bpm) is backup. Ventricular pacemaker (20-40 bpm) is last resort. The ventricular rate determines true perfusion — too slow can't meet needs; too rapid compromises filling and cardiac output."},
+      {h:"ECG Waveforms", t:"ul", items:["P wave: atrial depolarization","PR interval: 0.12-0.20 sec (3-5 small squares)","QRS complex: ventricular depolarization, 0.06-0.11 sec","ST segment: between depolarization and repolarization; elevation indicates injury","T wave: ventricular repolarization","QT interval: 0.42 sec men, 0.43 sec women","U wave: rarely seen; seen in hypokalemia"]},
+      {h:"Sinus Dysrhythmias", t:"ul", items:["Normal sinus rhythm: 60-100 bpm, regular","Sinus tachycardia: >100 bpm (160-180 max)","Sinus bradycardia: <60 bpm; treat with atropine or pacing if symptomatic","Sinus dysrhythmia: varies with respiration; normal in young"]},
+      {h:"Atrial Dysrhythmias", t:"ul", items:["PSVT: 150-250 bpm, sudden onset; vagal maneuvers, adenosine, cardioversion","Atrial flutter: 250-350 bpm, sawtooth P waves; 2:1, 3:1, 4:1 block","Atrial fibrillation: 350-500 bpm, chaotic quivering waves, irregular ventricular rhythm","Risk: mural thrombi, embolic events (stroke, MI, PE)","Treatment: rate control or rhythm conversion; anticoagulation if >72 hours"]},
+      {h:"Ventricular Dysrhythmias", t:"ul", items:["PVCs: ectopic ventricular beats, no P waves, wide QRS","Ventricular bigeminy: PVC after each sinus beat","Ventricular tachycardia: ≥3 PVCs in a row, >100 bpm","Ventricular fibrillation: rapid irregular ineffective depolarizations; no pulse","Treatment: amiodarone/lidocaine; defibrillation; CPR if no response"]},
+      {h:"Electrical Therapy", t:"p", txt:"Cardioversion (synchronized) for unstable tachydysrhythmias. Defibrillation (unsynchronized) for VF/pulseless VT. Implantable devices: pacemakers for bradycardias, ICDs for chronic tachydysrhythmias. Cardiac ablation for long-term atrial flutter/fibrillation management."}
+    ]}
+];
+
+const QUESTIONS = [
+  // Topic 1 (6)
+  {id:1,topic:1,difficulty:"easy",q:"According to Hamilton et al. (2025), what is the recommended patient room layout for ICUs?",options:["Open-bay layouts","Single-patient rooms","Double-occupancy rooms","Shared ward style"],correct:1,exp:"Single-patient rooms rather than open-bay layouts enhance infection control, patient/family satisfaction, privacy, and confidentiality."},
+  {id:2,topic:1,difficulty:"easy",q:"Decentralized staff charting areas in the ICU are designed to:",options:["Increase the patient-to-nurse ratio","Allow staff to remain closer to patients","Reduce documentation requirements","Eliminate the need for vital sign monitoring"],correct:1,exp:"Decentralized staff areas allow multiple charting locations, keeping staff closer to patients, reducing response times and improving safety."},
+  {id:3,topic:1,difficulty:"medium",q:"How does natural lighting affect ICU patients according to research?",options:["Increases mortality rates","Increases delirium incidence","Reduces mortality, delirium, and ICU length of stay","Has no measurable effect"],correct:2,exp:"Window views and natural lighting reduce mortality, delirium, and ventilator or ICU length of stay (LOS)."},
+  {id:4,topic:1,difficulty:"easy",q:"The AACN defines acute and critical care nursing as the specialty that manages human responses to:",options:["Chronic illness management","Actual or potential life-threatening problems","Post-surgical recovery only","Mental health crises"],correct:1,exp:"AACN definition: \"the specialty that manages human responses to actual or potential life-threatening problems.\""},
+  {id:5,topic:1,difficulty:"medium",q:"What is the purpose of incorporating noise mitigation strategies (e.g., sound-absorbing tiles) in ICU design?",options:["Reduce staff conversations","Reduce sleep disruption","Comply with building regulations only","Save electrical energy"],correct:1,exp:"Natural lighting, circadian lighting, and noise mitigation reduce sleep disruption in critically ill patients."},
+  {id:6,topic:1,difficulty:"hard",q:"Surge capacity in ICU planning includes which components?",options:["Equipment only","Staff only","Equipment, staff, and ICU physical infrastructure (beds/care locations)","Beds only"],correct:2,exp:"Surge capacity must include equipment, staff, and the ICU physical infrastructure to address patient volume surges."},
+
+  // Topic 2 (6)
+  {id:7,topic:2,difficulty:"easy",q:"The Synergy Model describes nursing practice on the basis of:",options:["Patient outcomes only","Patients' characteristics","Nursing interventions","Hospital policies"],correct:1,exp:"The Synergy Model describes nursing practice based on patients' characteristics — 8 patient characteristics and 8 nurse competencies."},
+  {id:8,topic:2,difficulty:"easy",q:"How many patient characteristics and nurse competencies form the basis of the Synergy Model?",options:["5 each","8 each","10 each","12 each"],correct:1,exp:"The Synergy Model consists of 8 patient characteristics and 8 nurse competencies that synergize for optimal outcomes."},
+  {id:9,topic:2,difficulty:"medium",q:"Which of the following is NOT a patient characteristic in the Synergy Model?",options:["Resiliency","Vulnerability","Clinical Judgment","Stability"],correct:2,exp:"Clinical Judgment is a NURSE competency, not a patient characteristic. Patient characteristics include Resiliency, Vulnerability, Stability, Complexity, Resource Availability, Participation in Care, Participation in Decision Making, and Predictability."},
+  {id:10,topic:2,difficulty:"medium",q:"In the Synergy Model, \"Resiliency\" as a patient characteristic is defined as:",options:["Susceptibility to actual or potential stressors","Ability to maintain steady-state equilibrium","Capacity to return to restorative level of functioning using compensatory mechanisms","Intricate entanglement of two or more systems"],correct:2,exp:"Resiliency is the capacity to return to a restorative level of functioning using compensatory/coping mechanisms; the ability to bounce back quickly after an insult."},
+  {id:11,topic:2,difficulty:"easy",q:"Which is a nursing intervention to promote sleep in critically ill patients?",options:["Bathing patients in the middle of the night for staff convenience","Providing earplugs and eye masks","Keeping room lights on continuously","Avoiding family visits during the day"],correct:1,exp:"Sleep promotion includes: earplugs/eye masks, blocked sleep times, quiet time during day shift, music therapy, white noise, and a 5-minute backrub before sleep."},
+  {id:12,topic:2,difficulty:"hard",q:"According to the Synergy Model, when are patient outcomes optimal?",options:["When patients' characteristics drive nurses' competencies","When patients' characteristics and nurses' competencies match and synergize","When nurses' competencies drive patients' characteristics","When patients are not concerned about nurses' competencies"],correct:1,exp:"Premise 4: When patients' characteristics and nurses' competencies match and synergize, outcomes for the patient are optimal."},
+
+  // Topic 3 (6)
+  {id:13,topic:3,difficulty:"easy",q:"What percentage of critically ill patients are malnourished upon admission?",options:["Up to 25%","Up to 35%","Up to 45%","Up to 55%"],correct:3,exp:"Up to 55% of critically ill patients are malnourished upon admission, and risk increases due to hypercatabolic state."},
+  {id:14,topic:3,difficulty:"easy",q:"Which route of nutrition is preferred when the GI tract is functional?",options:["Parenteral nutrition","Enteral nutrition","Oral diet only when tolerated","IV fluids with dextrose only"],correct:1,exp:"Enteral Nutrition (EN) is preferred when the GI tract is functional — it preserves gut mucosal integrity and reduces mortality."},
+  {id:15,topic:3,difficulty:"medium",q:"Early enteral nutrition (EEN) should be initiated within what timeframe?",options:["6 hours of admission","12 hours of admission","24-48 hours of critical illness presentation","72 hours of admission"],correct:2,exp:"EEN is the provision of enteral nutrition within the initial 24-48 hours of critical illness presentation."},
+  {id:16,topic:3,difficulty:"medium",q:"What is the recommended target blood glucose range for critically ill patients?",options:["80-110 mg/dL","110-140 mg/dL","140-180 mg/dL","180-220 mg/dL"],correct:2,exp:"The recommended target blood glucose range is 140-180 mg/dL for critically ill patients. Insulin infusion is initiated when glucose > 180 mg/dL."},
+  {id:17,topic:3,difficulty:"hard",q:"Refeeding syndrome is a serious condition that alters the patient's:",options:["Blood pressure","Electrolyte balance","Body temperature","Respiratory rate"],correct:1,exp:"Refeeding syndrome alters the electrolyte balance of cells and can be life-threatening when nutrition is reintroduced to starved or severely malnourished patients."},
+  {id:18,topic:3,difficulty:"hard",q:"To help combat the risk of refeeding syndrome, feed should be started at no more than:",options:["25% for the first 2 days","50% for the first 2 days of therapy","75% for the first 3 days","100% immediately"],correct:1,exp:"Recommendation: start feed at no more than 50% for the first 2 days of therapy. Supplements of potassium, phosphate, and magnesium may also be required."},
+
+  // Topic 4 (7)
+  {id:19,topic:4,difficulty:"easy",q:"Pain is defined as a distressing experience associated with:",options:["Actual or potential tissue damage","Emotional trauma only","Surgical recovery","Chronic illness only"],correct:0,exp:"Pain is associated with actual or potential tissue damage with sensory, emotional, cognitive, and social/behavioral components."},
+  {id:20,topic:4,difficulty:"easy",q:"In the PQRSTUV mnemonic for pain assessment, what does \"Q\" stand for?",options:["Quantity","Quality","Question","Quick assessment"],correct:1,exp:"Q = Quality: pain described as dull, aching, sharp, burning, or stabbing."},
+  {id:21,topic:4,difficulty:"medium",q:"The Critical-Care Pain Observation Tool (CPOT) has a maximum total score of:",options:["4","6","8","10"],correct:2,exp:"CPOT scores 4 indicators (Facial Expression, Body Movements, Compliance/Vocalization, Muscle Tension) each 0-2, for a maximum total of 8."},
+  {id:22,topic:4,difficulty:"easy",q:"The most life-threatening opioid side effect is:",options:["Constipation","Nausea and vomiting","Respiratory depression","Itching/pruritus"],correct:2,exp:"Respiratory depression is the most life-threatening opioid side effect. Signs: RR <8-10, ↓SpO2, ↑ETCO2, altered LOC. Reversed with naloxone."},
+  {id:23,topic:4,difficulty:"medium",q:"Which of the following is a nonpharmacologic intervention for pain management?",options:["Morphine","Ice therapy","Fentanyl","Ketamine"],correct:1,exp:"Nonpharmacologic interventions include physical techniques (massage, ice therapy) and cognitive-behavioral techniques (relaxation, breathing, music)."},
+  {id:24,topic:4,difficulty:"easy",q:"The opioid antagonist used to reverse opioid-induced respiratory depression is:",options:["Flumazenil","Naloxone","Atropine","Protamine sulfate"],correct:1,exp:"Naloxone is the opioid antagonist used to readily reverse opioid-induced respiratory depression."},
+  {id:25,topic:4,difficulty:"hard",q:"Why should vital signs NOT be considered primary indicators of pain?",options:["They are too difficult to measure","They can be attributed to other distress conditions, homeostatic changes, and medications","They never change during pain","They are more reliable than behavioral indicators"],correct:1,exp:"Vital signs can be attributed to other distress conditions, homeostatic changes, and medications. They should be a cue to begin further assessment, not primary pain indicators."},
+
+  // Topic 5 (7)
+  {id:26,topic:5,difficulty:"easy",q:"On the Richmond Agitation-Sedation Scale (RASS), a score of 0 indicates:",options:["Combative","Alert and calm","Deep sedation","Unresponsive"],correct:1,exp:"RASS 0 = Alert and calm. Range is +4 (combative) to -5 (unresponsive)."},
+  {id:27,topic:5,difficulty:"medium",q:"Current guidelines recommend which level of sedation for mechanically ventilated critically ill patients?",options:["Deep sedation","Light sedation","No sedation at all","General anesthesia"],correct:1,exp:"Current guidelines recommend light sedation (approximates RASS -1) for critically ill patients receiving mechanical ventilation."},
+  {id:28,topic:5,difficulty:"medium",q:"What percentage of mechanically ventilated patients experience delirium?",options:["Less than 25%","Greater than 50%","Exactly 30%","Around 40%"],correct:1,exp:"Greater than 50% of mechanically ventilated patients experience delirium, which increases hospital stay and mortality rates."},
+  {id:29,topic:5,difficulty:"easy",q:"The CAM-ICU assessment tool is used to detect:",options:["Pain level","Sedation depth","Delirium","Cardiac output"],correct:2,exp:"CAM-ICU (Confusion Assessment Method for the ICU) is the benchmark tool to detect delirium in ICU patients."},
+  {id:30,topic:5,difficulty:"medium",q:"Which of the following is a precipitating risk factor for delirium?",options:["Young age","Benzodiazepines","Light sedation","Early mobility"],correct:1,exp:"Benzodiazepines, opioids, deep sedation, anticholinergics, steroids, and certain surgeries are precipitating factors for delirium."},
+  {id:31,topic:5,difficulty:"hard",q:"In the ABCDEF Liberation Bundle, what does \"B\" stand for?",options:["Blood pressure control","Both SATs and SBTs","Breathing trials only","Bed rest"],correct:1,exp:"B = Both spontaneous awakening trials (SATs) and spontaneous breathing trials (SBTs) performed daily."},
+  {id:32,topic:5,difficulty:"hard",q:"Which delirium subtype is often misdiagnosed as depression?",options:["Hyperactive","Hypoactive","Mixed","All subtypes equally"],correct:1,exp:"The hypoactive form is often not well recognized and is misdiagnosed as depression. Disorientation is common in delirium but not a feature of depression."},
+
+  // Topic 6 (5)
+  {id:33,topic:6,difficulty:"easy",q:"The ethical principle of Autonomy refers to the right to:",options:["Avoid harm to patients","Self-determination about one's own body","Tell the truth at all times","Allocate scarce resources fairly"],correct:1,exp:"Autonomy is the right to self-determination. Informed consent respects autonomy by providing patients/families the information needed for sound decisions."},
+  {id:34,topic:6,difficulty:"easy",q:"Beneficence means nurses are ethically obligated to:",options:["Avoid harm only","Avoid harm and promote benefit for their patients","Keep all promises made to patients","Distribute resources equally"],correct:1,exp:"Beneficence: nurses are ethically, legally, and professionally obligated to avoid harm AND promote benefit for their patients."},
+  {id:35,topic:6,difficulty:"medium",q:"Nonmaleficence is the ethical principle to:",options:["Avoid unnecessary physical/psychological harm","Promote good outcomes","Respect patient autonomy at all times","Be faithful to one's patients"],correct:0,exp:"Nonmaleficence: avoid unnecessary physical/bodily harm and psychological or emotional distress. Harm can also result from breach of professional standards of care."},
+  {id:36,topic:6,difficulty:"medium",q:"Which of the following is an ethical issue commonly encountered in critical care?",options:["End-of-life treatment decisions","Staffing schedule conflicts","Equipment purchasing decisions","Bed allocation only"],correct:0,exp:"Ethical issues include end-of-life decisions, futility, DNR, informed consent, organ harvesting/allocation, assisted suicide, resource allocation, and clinical research."},
+  {id:37,topic:6,difficulty:"hard",q:"The ethical principle of Veracity means:",options:["Keeping promises to patients","Telling the truth about diagnosis and treatment","Avoiding harm to patients","Distributive justice in resources"],correct:1,exp:"Veracity is truth-telling — full disclosure of diagnosis, potential risks and benefits of treatments and alternatives, enabling informed decisions."},
+
+  // Topic 7 (7)
+  {id:38,topic:7,difficulty:"easy",q:"Acute Coronary Syndrome (ACS) includes all of the following EXCEPT:",options:["Unstable angina","STEMI","NSTEMI","Stable angina"],correct:3,exp:"ACS includes unstable angina, STEMI, and NSTEMI — all related to acute myocardial ischemia/infarction from abrupt reduction in coronary blood flow. Stable angina is not part of ACS."},
+  {id:39,topic:7,difficulty:"easy",q:"STEMI is identified on the ECG by:",options:["No ST changes","ST segment elevation","Q waves only","T wave inversion only"],correct:1,exp:"STEMI shows ST segment elevation on ECG and releases biomarkers indicating myocardial necrosis into circulation."},
+  {id:40,topic:7,difficulty:"medium",q:"The most common surgical approach for CABG is:",options:["Thoracotomy","Median sternotomy","Laparotomy","Subxiphoid approach"],correct:1,exp:"Median sternotomy is the most common approach used for MI revascularization and valve surgery."},
+  {id:41,topic:7,difficulty:"medium",q:"Which graft type has 90% patency 10 years after cardiac surgery?",options:["Saphenous vein grafts","Internal mammary artery grafts","Radial artery grafts","Femoral vein grafts"],correct:1,exp:"90% of internal mammary artery grafts remain patent 10 years after surgery. They exhibit less atherosclerosis and improved long-term survival compared to saphenous vein grafts."},
+  {id:42,topic:7,difficulty:"hard",q:"Approximately what percentage of saphenous vein grafts are occluded after 10 years?",options:["25%","50%","75%","90%"],correct:1,exp:"About 50% of saphenous vein grafts are occluded after 10 years due to thrombosis, atherosclerosis, or fibrointimal hyperplasia."},
+  {id:43,topic:7,difficulty:"medium",q:"The cardiopulmonary bypass machine during cardiac surgery:",options:["Pumps blood only","Oxygenates blood and circulates it throughout the body","Filters toxins from blood","Cools the body only"],correct:1,exp:"The CPB machine assumes the job of oxygenating the patient's blood and circulating it throughout the body while the heart is still and empty."},
+  {id:44,topic:7,difficulty:"hard",q:"Heparinization during cardiopulmonary bypass is reversed by:",options:["Vitamin K","Protamine sulfate","Fresh frozen plasma","Platelet infusion"],correct:1,exp:"Heparinization is reversed by protamine sulfate after CPB. If chest tube bleeding exceeds 200 mL/h, protamine is given first to reverse heparin effects."},
+
+  // Topic 8 (6)
+  {id:45,topic:8,difficulty:"easy",q:"The normal PR interval on ECG is:",options:["0.06-0.11 seconds","0.12-0.20 seconds","0.20-0.30 seconds","0.30-0.40 seconds"],correct:1,exp:"Normal PR interval is 0.12-0.20 seconds (3-5 small squares), measured from beginning of P wave to beginning of QRS."},
+  {id:46,topic:8,difficulty:"easy",q:"Sinus tachycardia is defined as a heart rate of:",options:["Less than 60 bpm","60-100 bpm","100 bpm or more (up to 160-180)","150-250 bpm"],correct:2,exp:"Sinus tachycardia starts at 100 bpm and extends to 160-180 bpm. It is caused by stress, exercise, stimulants, fever, anemia, hyperthyroidism, hypoxemia."},
+  {id:47,topic:8,difficulty:"medium",q:"The \"sawtooth\" P wave pattern on ECG is characteristic of:",options:["Atrial fibrillation","Atrial flutter","Ventricular tachycardia","Sinus arrhythmia"],correct:1,exp:"Atrial flutter has atrial rate 250-350 bpm producing characteristic \"sawtooth\" P waves. AV node allows 2:1, 3:1, or 4:1 block."},
+  {id:48,topic:8,difficulty:"medium",q:"Atrial fibrillation is characterized by atrial rates of:",options:["150-250 bpm","250-350 bpm","350-500 bpm","500-700 bpm"],correct:2,exp:"Atrial fibrillation: rapid atrial ectopic rhythm with atrial rates of 350-500 bpm, characterized by chaotic quivering fibrillatory waves and irregular ventricular rhythm."},
+  {id:49,topic:8,difficulty:"hard",q:"Three or more PVCs in a row on ECG is defined as:",options:["Ventricular fibrillation","Ventricular tachycardia","Atrial flutter","Paroxysmal supraventricular tachycardia"],correct:1,exp:"Ventricular tachycardia is defined as 3 or more PVCs in a row, recognized by wide bizarre QRS complexes at rate >100 bpm. Can be sustained or non-sustained."},
+  {id:50,topic:8,difficulty:"hard",q:"The drug of choice in the emergency setting for ventricular tachycardia is:",options:["Atropine","Amiodarone","Adenosine","Digoxin"],correct:1,exp:"In emergency settings, amiodarone and lidocaine are the drugs of choice for ventricular tachycardia. If unstable, synchronized cardioversion; if pulseless, defibrillation."},
+  // Expanded MCQs 51-80
+  {id:51,topic:1,difficulty:"medium",q:"For patients receiving enteral feeding, the recommended bed position to reduce aspiration risk is:",options:["Flat supine","Trendelenburg (head down)","30-45° head of bed elevated","Prone position"],correct:2,exp:"Elevate the head of the bed 30° to 45° to reduce aspiration risk and improve tolerance to gastric feeding."},
+  {id:52,topic:1,difficulty:"medium",q:"What is the purpose of dedicated PPE donning and doffing spaces in ICU design?",options:["For staff comfort breaks","For PPE management to prevent infection","For equipment storage","For documentation purposes"],correct:1,exp:"Advanced infection prevention features include dedicated PPE donning/doffing spaces to prevent contamination and transmission."},
+  {id:53,topic:1,difficulty:"hard",q:"Circadian lighting in ICU helps to:",options:["Maintain room temperature","Reduce patient-physician conflicts","Maintain sleep-wake cycles and reduce delirium","Reduce electricity bills"],correct:2,exp:"Incorporating natural lighting, circadian lighting, and noise mitigation reduces sleep disruption; circadian lighting supports natural sleep-wake cycles."},
+  {id:54,topic:1,difficulty:"medium",q:"Tele-ICU programs are associated with which outcomes?",options:["Increased mortality rates","Increased ICU length of stay","Reduced mortality and ICU length of stay","No measurable effect on outcomes"],correct:2,exp:"Tele-ICU programs may reduce mortality and ICU length of stay through remote monitoring and consultation."},
+  {id:55,topic:2,difficulty:"medium",q:"In the Synergy Model, \"Stability\" as a patient characteristic is defined as:",options:["Capacity to return to restorative functioning","Susceptibility to actual or potential stressors","Ability to maintain steady-state equilibrium","Intricate entanglement of two or more systems"],correct:2,exp:"Stability is the ability to maintain a steady-state equilibrium."},
+  {id:56,topic:2,difficulty:"hard",q:"\"Clinical Inquiry\" as a nurse competency refers to:",options:["Clinical decision-making process","Questioning and evaluating practice, creating changes through research utilization","Caring for patients of diverse backgrounds","Working with healthcare providers toward shared goals"],correct:1,exp:"Clinical Inquiry is the ongoing process of questioning and evaluating practice and providing informed practice — creating changes through research utilization and experiential learning."},
+  {id:57,topic:2,difficulty:"medium",q:"Which nursing intervention best promotes a patient's sense of control in ICU?",options:["Restricting all decisions to family members","Allowing patient to make choices whenever possible","Withholding procedural information","Avoiding anticipatory guidance"],correct:1,exp:"Reinforcing sense of control includes providing order and predictability, using anticipatory guidance, and allowing the patient to make choices whenever possible."},
+  {id:58,topic:2,difficulty:"medium",q:"Post-intensive care syndrome (PICS) is characterized by:",options:["Acute pain only","Sleep disorders only","Depression and cognitive changes after critical illness","Wound healing complications"],correct:2,exp:"PICS involves depression and other cognitive changes after critical illness — ICU diaries help patients process their experience and reduce PICS."},
+  {id:59,topic:3,difficulty:"easy",q:"The fight-or-flight phase of stress response involves activation of which nervous system?",options:["Parasympathetic","Sympathetic","Enteric","Somatic"],correct:1,exp:"Fight-or-Flight: rapid response via sympathetic nervous system. Hypothalamus signals adrenal glands to release catecholamines (epinephrine & norepinephrine)."},
+  {id:60,topic:3,difficulty:"hard",q:"Gluconeogenesis during critical illness converts:",options:["Glucose into proteins","Proteins and fats into glucose","Fat into muscle tissue","Glycogen into fat reserves"],correct:1,exp:"Gluconeogenesis converts proteins and fats into glucose for energy and cell repair during the resistance phase of stress response."},
+  {id:61,topic:3,difficulty:"medium",q:"Gastric Residual Volume (GRV) is checked to:",options:["Determine intravenous access","Verify tube placement and assess absorption of feed","Measure urine output","Calculate calorie intake"],correct:1,exp:"GRV is a common method to check absorption of feed by aspirating contents from the gut to measure — helps assess tolerance."},
+  {id:62,topic:3,difficulty:"medium",q:"Acceptable methods for nasogastric (NG) tube placement verification include:",options:["Visual inspection only","pH graded paper (pH <5) and X-ray confirmation","Auscultation alone","Patient self-report"],correct:1,exp:"Position of all NG tubes must be confirmed after placement and before each use. Methods: pH graded paper (pH <5 confirms gastric placement) and X-ray confirmation if necessary."},
+  {id:63,topic:4,difficulty:"easy",q:"In the PQRSTUV mnemonic, \"S\" stands for:",options:["Symptoms","Severity and other symptoms","Sleep patterns","Site of pain"],correct:1,exp:"S = Severity and other symptoms — intensity/severity of pain."},
+  {id:64,topic:4,difficulty:"medium",q:"Which of the following is a pharmacologic opioid agonist used for pain management?",options:["Acetaminophen","Ketamine","Morphine","Lidocaine"],correct:2,exp:"Morphine, Fentanyl, Hydromorphone, Meperidine, Codeine, Methadone are opioid agonists. Acetaminophen, NSAIDs, Ketamine, Lidocaine, Anticonvulsants, Antidepressants are nonopioids."},
+  {id:65,topic:4,difficulty:"medium",q:"A CPOT score of 0 indicates:",options:["Maximum pain intensity","No pain indicators observed","Mild pain present","Severe pain requiring intervention"],correct:1,exp:"CPOT 0 indicates relaxed indicators — no pain behaviors observed in facial expression, body movements, compliance, or muscle tension."},
+  {id:66,topic:4,difficulty:"hard",q:"Snoring in an opioid-treated patient is a warning sign for:",options:["Sleep talking","Airway obstruction by tongue leading to hypoxemia and cardiopulmonary arrest","Patient comfort","Resolution of pain"],correct:1,exp:"Snoring indicates airway obstruction by the tongue, leading to hypoxemia and potential cardiopulmonary arrest — vigilant monitoring required."},
+  {id:67,topic:5,difficulty:"easy",q:"On the RASS scale, a score of +4 indicates:",options:["Alert and calm","Combative","Drowsy","Unresponsive"],correct:1,exp:"RASS +4 = Combative: overtly combative, violent, immediate danger to staff."},
+  {id:68,topic:5,difficulty:"medium",q:"Which sedative-hypnotic drug is commonly preferred for ICU sedation in mechanically ventilated adults?",options:["Diazepam","Lorazepam","Propofol","Midazolam"],correct:2,exp:"Nonbenzodiazepines (propofol or dexmedetomidine) are recommended rather than benzodiazepines (midazolam or lorazepam) in mechanically ventilated adult patients."},
+  {id:69,topic:5,difficulty:"hard",q:"CAM-ICU is positive (delirium present) when which criteria are met?",options:["Just altered level of consciousness","Just inattention","Acute change + inattention + (altered LOC OR disorganized thinking)","All 4 criteria including disorientation"],correct:2,exp:"CAM-ICU positive: Feature 1 (acute change/fluctuation) AND Feature 2 (inattention) AND either Feature 3 (altered LOC) OR Feature 4 (disorganized thinking)."},
+  {id:70,topic:5,difficulty:"medium",q:"Which intervention helps prevent post-intensive care syndrome (PICS)?",options:["Physical restraints","Critical care patient diaries","Heavy sedation throughout stay","Strict limitation of family visits"],correct:1,exp:"Critical care patient diaries are written daily to help patients process their ICU experience and reduce PICS — many patients experience depression and cognitive changes after critical illness."},
+  {id:71,topic:6,difficulty:"medium",q:"The ethical principle of Fidelity is defined as:",options:["Telling the truth about diagnosis","Duty to be faithful by keeping promises and fulfilling commitments","Avoiding harm to patients","Right to self-determination"],correct:1,exp:"Fidelity is the duty to be faithful to one's patients by keeping promises and fulfilling contracts and commitments."},
+  {id:72,topic:6,difficulty:"medium",q:"Justice in nursing ethics is often discussed in terms of:",options:["Truth-telling","Distributive justice — how one allocates scarce or finite resources","Promise-keeping","Self-determination rights"],correct:1,exp:"Justice is often discussed as distributive justice — how one allocates scarce or finite resources among patients."},
+  {id:73,topic:6,difficulty:"hard",q:"Institutional ethics committees typically include all of the following EXCEPT:",options:["Physicians","Nurses","Patients' family members as voting members","Social workers"],correct:2,exp:"Ethics committees are diverse groups including physicians, nurses, social workers, counselors, legal counsel, administrators, and community members — families are not voting members but are consulted."},
+  {id:74,topic:7,difficulty:"medium",q:"Beta-blockers in ACS management should be:",options:["Discontinued immediately upon admission","Initiated in first 24 hours unless contraindicated, continued during and after hospitalization","Only given if patient becomes symptomatic","Avoided in all ACS patients"],correct:1,exp:"Beta-blockers and ACE inhibitors are initiated in the first 24 hours unless contraindicated. Beta-blockers are continued during and after hospitalization."},
+  {id:75,topic:7,difficulty:"medium",q:"Sternal wound infection risk with bilateral internal mammary artery grafts is higher in:",options:["Healthy young patients","Diabetic or obese patients","Cardiac patients only","All patients equally"],correct:1,exp:"Sternal wound infection may develop in diabetic or obese patients if both LIMA and RIMA are used as grafts."},
+  {id:76,topic:7,difficulty:"hard",q:"The typical starting FiO2 during post-cardiac surgery mechanical ventilation is:",options:["21-30% O2","40-50% O2","60-80% O2","100% O2"],correct:1,exp:"Starting point for SaO2 is 40-50% O2; PEEP starts at 5 cm H2O. Effective oxygenation monitored using pulse oximeter. Mode is assist-control ventilation."},
+  {id:77,topic:8,difficulty:"easy",q:"A U wave on ECG is typically seen in which condition?",options:["Hyperkalemia","Hypokalemia","Hypercalcemia","Myocardial infarction"],correct:1,exp:"U wave is a small positive deflection after T wave, rarely seen but typically appears in hypokalemia (low potassium)."},
+  {id:78,topic:8,difficulty:"easy",q:"The normal QRS complex duration on ECG is:",options:["0.06-0.11 seconds","0.12-0.20 seconds","0.20-0.30 seconds","0.30-0.40 seconds"],correct:0,exp:"Normal QRS complex interval is 0.06 (1.5 small squares) to 0.11 (2.5 small squares) seconds — represents ventricular depolarization."},
+  {id:79,topic:8,difficulty:"medium",q:"Ventricular bigeminy is defined as:",options:["A PVC occurring after every other beat","A PVC occurring after each sinus beat","Three PVCs in a row","Two PVCs in a row"],correct:1,exp:"Ventricular bigeminy is a PVC that occurs after each sinus beat. Trigeminy = PVC after two consecutive sinus beats. Couplet = two PVCs in a row. Triplet = three PVCs in a row."},
+  {id:80,topic:8,difficulty:"hard",q:"Paroxysmal Supraventricular Tachycardia (PSVT) heart rate range is:",options:["60-100 bpm","100-160 bpm","150-250 bpm","250-350 bpm"],correct:2,exp:"PSVT is a rapid atrial rhythm occurring at 150 to 250 beats/min. Sudden onset and termination. Treated with vagal maneuvers, adenosine, or cardioversion."}
+];
+
+const FLASHCARDS = [
+  // Topic 1 (6)
+  {id:1,topic:1,difficulty:"easy",front:"What is the AACN definition of critical care nursing?",back:"\"The specialty that manages human responses to actual or potential life-threatening problems.\""},
+  {id:2,topic:1,difficulty:"easy",front:"What is the recommended ICU patient room layout per Hamilton et al. (2025)?",back:"Single-patient rooms rather than open-bay layouts — enhances infection control, privacy, satisfaction, and confidentiality."},
+  {id:3,topic:1,difficulty:"medium",front:"What is the effect of natural lighting on ICU patients?",back:"Reduces mortality, delirium, and ventilator or ICU length of stay (LOS)."},
+  {id:4,topic:1,difficulty:"medium",front:"What is the purpose of decentralized staff charting areas?",back:"Allow staff to remain closer to patients, resulting in shorter response times, improved patient visibility and safety."},
+  {id:5,topic:1,difficulty:"hard",front:"What does HVAC stand for and what does it address in ICU design?",back:"Heating, Ventilation, and Air Conditioning — used to prevent airborne, water-borne, and surface-borne transmission in ICUs."},
+  {id:6,topic:1,difficulty:"medium",front:"What is Tele-ICU?",back:"ICU programs delivered remotely; may reduce mortality and ICU length of stay through offsite monitoring and consultation."},
+  // Topic 2 (6)
+  {id:7,topic:2,difficulty:"easy",front:"What does the Synergy Model describe?",back:"Nursing practice on the basis of patients' characteristics — 8 patient characteristics and 8 nurse competencies that synergize for optimal outcomes."},
+  {id:8,topic:2,difficulty:"medium",front:"List the 8 patient characteristics in the Synergy Model.",back:"Resiliency, Vulnerability, Stability, Complexity, Resource Availability, Participation in Care, Participation in Decision Making, Predictability."},
+  {id:9,topic:2,difficulty:"medium",front:"List the 8 nurse competencies in the Synergy Model.",back:"Clinical Judgment, Advocacy and Moral Agency, Caring Practices, Collaboration, Systems Thinking, Response to Diversity, Facilitation of Learning, Clinical Inquiry."},
+  {id:10,topic:2,difficulty:"medium",front:"Define \"Resiliency\" as a patient characteristic.",back:"The capacity to return to a restorative level of functioning using compensatory/coping mechanisms; the ability to bounce back quickly after an insult."},
+  {id:11,topic:2,difficulty:"easy",front:"Define \"Vulnerability\" as a patient characteristic.",back:"Susceptibility to actual or potential stressors that may adversely affect patient outcomes."},
+  {id:12,topic:2,difficulty:"hard",front:"Name three nursing interventions to promote sleep in critically ill patients.",back:"Provide large clocks and calendars; block sleep times; provide quiet time during day shift; earplugs and eye masks; music therapy; 5-minute backrub before sleep; eliminate pain."},
+  // Topic 3 (6)
+  {id:13,topic:3,difficulty:"easy",front:"What percentage of critically ill patients are malnourished upon admission?",back:"Up to 55% — risk increases due to hypercatabolic state and barriers to oral intake."},
+  {id:14,topic:3,difficulty:"easy",front:"Which route of nutrition is preferred when the GI tract is functional?",back:"Enteral Nutrition (EN) — preserves gut mucosal integrity, reduces mortality, prevents bacterial translocation."},
+  {id:15,topic:3,difficulty:"medium",front:"When should early enteral nutrition (EEN) begin?",back:"Within 24-48 hours of critical illness presentation."},
+  {id:16,topic:3,difficulty:"medium",front:"What is the target blood glucose range for critically ill patients?",back:"140-180 mg/dL. Insulin infusion is initiated when glucose exceeds 180 mg/dL (10 mmol/L)."},
+  {id:17,topic:3,difficulty:"hard",front:"What is Refeeding Syndrome?",back:"A serious condition that alters the electrolyte balance of cells; can be life-threatening when nutrition is reintroduced to starved or severely malnourished patients."},
+  {id:18,topic:3,difficulty:"hard",front:"To combat refeeding syndrome risk, at what percentage should feed be started?",back:"No more than 50% for the first 2 days of therapy. Supplements of potassium, phosphate, and magnesium may be required."},
+  // Topic 4 (7)
+  {id:19,topic:4,difficulty:"easy",front:"What is the definition of pain?",back:"A distressing experience associated with actual or potential tissue damage with sensory, emotional, cognitive, and social/behavioral components."},
+  {id:20,topic:4,difficulty:"medium",front:"What does PQRSTUV stand for in pain assessment?",back:"P: Provocative/palliative; Q: Quality; R: Region/radiation; S: Severity; T: Timing; U: Understanding; V: Values."},
+  {id:21,topic:4,difficulty:"medium",front:"What is the maximum CPOT score and what indicators does it measure?",back:"Maximum score is 8. Indicators: Facial Expression, Body Movements, Compliance with ventilator (or Vocalization for non-intubated), Muscle Tension — each 0-2."},
+  {id:22,topic:4,difficulty:"easy",front:"What is the most life-threatening opioid side effect?",back:"Respiratory depression. Signs: decreased RR (<8-10), decreased SpO2, elevated ETCO2, altered LOC. Reversed with naloxone."},
+  {id:23,topic:4,difficulty:"easy",front:"What opioid antagonist is used to reverse opioid-induced respiratory depression?",back:"Naloxone."},
+  {id:24,topic:4,difficulty:"medium",front:"In CPOT, what does a facial expression score of 2 indicate?",back:"Grimacing — brow lowering, orbit tightening, contraction around nose/mouth, plus eyelid tightly closed (mouth may be open or biting ETT)."},
+  {id:25,topic:4,difficulty:"hard",front:"What are the two pharmacologic categories of pain medications?",back:"Opioid Agonists (Morphine, Fentanyl, Hydromorphone, Meperidine, Codeine, Methadone) and Nonopioids (Acetaminophen, NSAIDs, Ketamine, Lidocaine, Anticonvulsants, Antidepressants)."},
+  // Topic 5 (7)
+  {id:26,topic:5,difficulty:"easy",front:"On the RASS scale, what does a score of 0 indicate?",back:"Alert and calm. RASS ranges from +4 (combative) to -5 (unresponsive)."},
+  {id:27,topic:5,difficulty:"medium",front:"What sedation level is recommended for mechanically ventilated critically ill patients?",back:"Light sedation (approximates RASS -1) — current guidelines recommend this approach to reduce complications."},
+  {id:28,topic:5,difficulty:"medium",front:"What percentage of mechanically ventilated patients experience delirium?",back:"Greater than 50% — delirium increases hospital stay and mortality rates."},
+  {id:29,topic:5,difficulty:"easy",front:"What tool is used to assess delirium in the ICU?",back:"CAM-ICU (Confusion Assessment Method for the Intensive Care Unit) — 4 criteria: acute change/fluctuation, inattention, altered LOC, disorganized thinking."},
+  {id:30,topic:5,difficulty:"medium",front:"What are the three subtypes of delirium?",back:"Hyperactive (agitated, paranoid), Hypoactive (withdrawn, quiet, often misdiagnosed as depression), and Mixed (combination of both)."},
+  {id:31,topic:5,difficulty:"hard",front:"What does the ABCDEF Liberation Bundle stand for?",back:"A: Assess pain; B: Both SAT and SBT; C: Choice of analgesia/sedation; D: Delirium assessment/prevention/management; E: Early mobility; F: Family engagement/empowerment."},
+  {id:32,topic:5,difficulty:"medium",front:"What is a daily sedation interruption (sedation vacation)?",back:"Turning off sedative infusions once daily (Spontaneous Awakening Trial - SAT) to avoid sedative dependence/withdrawal; carefully monitor and restart at lower dose if needed."},
+  // Topic 6 (5)
+  {id:33,topic:6,difficulty:"easy",front:"What is the ethical principle of Autonomy?",back:"The right to self-determination — the right to make decisions about one's own body. Informed consent respects this principle."},
+  {id:34,topic:6,difficulty:"easy",front:"What is the principle of Beneficence?",back:"Nurses are ethically, legally, and professionally obligated to avoid harm and promote benefit for their patients."},
+  {id:35,topic:6,difficulty:"medium",front:"What is the principle of Nonmaleficence?",back:"Avoid unnecessary physical/bodily harm as well as psychological or emotional distress. Harm can also be caused by breach of professional standards of care."},
+  {id:36,topic:6,difficulty:"medium",front:"What is Veracity in nursing ethics?",back:"Telling the truth about diagnosis, including full disclosure of potential risks and benefits of treatments and alternatives, enabling informed decisions."},
+  {id:37,topic:6,difficulty:"hard",front:"List the 4 steps in the ethical decision-making case method approach.",back:"1) Assessing the problem; 2) Defining the issues; 3) Goal setting, decision making, and implementing; 4) Evaluating and modifying actions."},
+  // Topic 7 (7)
+  {id:38,topic:7,difficulty:"easy",front:"What is Acute Coronary Syndrome (ACS)?",back:"Clinical symptoms compatible with acute myocardial ischemia/infarction due to abrupt reduction in coronary blood flow. Includes unstable angina, STEMI, NSTEMI."},
+  {id:39,topic:7,difficulty:"easy",front:"What are the three types of ACS?",back:"Unstable Angina (no ST changes, no biomarkers), STEMI (ST elevation, biomarkers present), NSTEMI (no ST elevation, biomarkers present)."},
+  {id:40,topic:7,difficulty:"medium",front:"What is the ECG difference between STEMI and NSTEMI?",back:"STEMI shows ST segment elevation; NSTEMI shows no ST segment elevation but biomarkers are released indicating myocardial necrosis."},
+  {id:41,topic:7,difficulty:"medium",front:"What is CABG?",back:"Coronary Artery Bypass Graft — uses native vessels or conduits harvested during initial surgery to reroute/bypass blood flow past diseased coronary arteries."},
+  {id:42,topic:7,difficulty:"easy",front:"What are the two commonly used graft types in CABG?",back:"Saphenous vein grafts (longest vein in body, ~50% occluded after 10 years) and Internal mammary artery grafts (90% patent at 10 years)."},
+  {id:43,topic:7,difficulty:"medium",front:"What is the 10-year patency rate of internal mammary artery grafts?",back:"90% — much better than saphenous vein grafts. Also less atherosclerosis and improved long-term survival."},
+  {id:44,topic:7,difficulty:"hard",front:"What is the purpose of the cardiopulmonary bypass (CPB) machine?",back:"Assumes the job of oxygenating the patient's blood and circulating it throughout the body while the heart is still and empty during surgery. Heparin prevents coagulation; reversed by protamine sulfate."},
+  // Topic 8 (6)
+  {id:45,topic:8,difficulty:"easy",front:"What is the rate of normal sinus rhythm?",back:"60-100 beats per minute, with impulse originating at the SA node in a regular rhythm."},
+  {id:46,topic:8,difficulty:"easy",front:"What is the normal PR interval range on ECG?",back:"0.12 to 0.20 seconds (equivalent to 3-5 small squares on ECG paper)."},
+  {id:47,topic:8,difficulty:"medium",front:"What is the normal QRS complex duration?",back:"0.06 to 0.11 seconds (1.5 to 2.5 small squares on ECG paper)."},
+  {id:48,topic:8,difficulty:"medium",front:"What is the atrial rate range and ECG pattern for atrial flutter?",back:"250-350 bpm with characteristic \"sawtooth\" P waves. AV node allows 2:1, 3:1, or 4:1 conduction block."},
+  {id:49,topic:8,difficulty:"medium",front:"What is the atrial rate range and pattern for atrial fibrillation?",back:"350-500 bpm with chaotic quivering fibrillatory waves; ventricular rhythm is characteristically irregular."},
+  {id:50,topic:8,difficulty:"hard",front:"What is the emergency treatment for ventricular fibrillation?",back:"Immediate defibrillation. If no response, support with CPR and drugs (amiodarone/lidocaine). VF is fatal if rapid defibrillation not instituted immediately."},
+  // Expanded Flashcards 51-80
+  {id:51,topic:1,difficulty:"medium",front:"What are ergonomic design features for ICU staff workspaces?",back:"Adjustable desks, monitors, footrests, chairs, and other height-adjustable components — reduce injury, increase efficiency, enhance satisfaction, and reduce fatigue."},
+  {id:52,topic:1,difficulty:"medium",front:"What are wellness rooms/respite spaces in ICU?",back:"Quiet rooms separate from patient care and documentation areas, ideally with windows for natural light, dedicated to promoting staff well-being."},
+  {id:53,topic:1,difficulty:"hard",front:"What is the role of mobile workstations in ICU?",back:"Permit healthcare documentation and bedside access to laboratory results, diagnostic imaging, and other elements of the electronic health record (EHR)."},
+  {id:54,topic:1,difficulty:"hard",front:"Why use pendant-mounted booms instead of wall-based utility access?",back:"Wall-based utilities often require the bed to be moved away from the wall to access the head of the patient. Pendant-mounted booms provide non-wall-based access, improving flexibility and safety."},
+  {id:55,topic:2,difficulty:"medium",front:"Define \"Complexity\" as a patient characteristic in the Synergy Model.",back:"The intricate entanglement of two or more systems (e.g., body, family, therapies)."},
+  {id:56,topic:2,difficulty:"medium",front:"Define \"Participation in Care\" as a patient characteristic.",back:"The extent to which patient/family engages in aspects of care provided by healthcare team."},
+  {id:57,topic:2,difficulty:"medium",front:"Define \"Predictability\" as a patient characteristic.",back:"A characteristic that allows one to expect a certain course of events or course of illness."},
+  {id:58,topic:2,difficulty:"hard",front:"What is Post-Intensive Care Syndrome (PICS)?",back:"Depression and other cognitive changes after critical illness. Prevented via light sedation, daily sedation interruption, early mobility, sleep protocols, and ICU diaries."},
+  {id:59,topic:3,difficulty:"hard",front:"What happens during the Resistance Phase of stress response?",back:"Hypothalamus triggers anterior pituitary; adrenal cortex releases cortisol (supports gluconeogenesis, anti-inflammatory); liver releases growth hormone; thyroid hormones regulate metabolism."},
+  {id:60,topic:3,difficulty:"hard",front:"Why must medications like Propofol be considered in caloric calculations?",back:"Propofol is lipid-based and provides calories from non-nutritional sources. Failing to account for it can lead to overfeeding (Excess caloric intake)."},
+  {id:61,topic:3,difficulty:"medium",front:"What is MUST in nutritional screening?",back:"Malnutrition Universal Screening Tool — used to screen all hospitalized patients for malnutrition risk. Critically ill patients require weekly screening."},
+  {id:62,topic:3,difficulty:"medium",front:"What is the function of prokinetic drugs in enteral feeding?",back:"Enhance GI motility to reduce feeding intolerance — used when managing high Gastric Residual Volume (GRV) to improve tolerance to gastric feeding."},
+  {id:63,topic:4,difficulty:"medium",front:"List the five components of pain.",back:"Sensory (intensity, location, quality), Emotional (unpleasantness, anxiety, fear), Cognitive (interpretation/meaning), Behavioral (avoidance/control behaviors), Physiologic (nociception and stress response)."},
+  {id:64,topic:4,difficulty:"hard",front:"What does a CPOT muscle tension score of 2 indicate?",back:"Strong resistance to passive movement; incapacity to complete them. Score range 0-2 (relaxed, tense/rigid, very tense/rigid)."},
+  {id:65,topic:4,difficulty:"hard",front:"What monitoring is required for patients at high risk of opioid-induced respiratory depression?",back:"Continuous pulse oximetry and capnography (ETCO2); respirations evaluated over 1 minute (rate, rhythm, depth). Vigilance in first 24h post-op, after dose increases, or change in opioid/route."},
+  {id:66,topic:4,difficulty:"medium",front:"What are some cognitive-behavioral pain interventions?",back:"Relaxation (breathing techniques) and music therapy — both reduce pain perception without pharmacologic side effects when used as adjuncts."},
+  {id:67,topic:5,difficulty:"medium",front:"What are the four levels of sedation?",back:"Light (RASS -1, anxiolysis — patient alert, responds to verbal commands), Moderate (RASS -3, procedural sedation), Deep (RASS -4, can't maintain airway), General anesthesia (RASS -5)."},
+  {id:68,topic:5,difficulty:"medium",front:"List the benzodiazepines used for ICU sedation.",back:"Diazepam, Lorazepam, Midazolam. However, nonbenzodiazepines (propofol, dexmedetomidine) are recommended rather than benzodiazepines in mechanically ventilated adults."},
+  {id:69,topic:5,difficulty:"medium",front:"What is a spontaneous breathing trial (SBT)?",back:"Allows ventilated patient to breathe with minimal or no ventilator support, used to assess readiness for extubation — part of the ABCDEF Bundle (B = Both SAT and SBT)."},
+  {id:70,topic:5,difficulty:"hard",front:"What characterizes mixed delirium?",back:"Combines both hyperactive (agitated, paranoid) and hypoactive (withdrawn, quiet) components. Patient switches between presentations, making treatment strategies difficult."},
+  {id:71,topic:6,difficulty:"medium",front:"What is the difference between Autonomy and Beneficence?",back:"Autonomy = patient's right to self-determination (informed consent). Beneficence = nurse's duty to avoid harm AND promote benefit for patients."},
+  {id:72,topic:6,difficulty:"medium",front:"What is the purpose of an institutional ethics committee?",back:"Provide ethics consultation and assist practitioners with an external voice on ethical issues; facilitate education for healthcare team members. Includes physicians, nurses, social workers, counselors, legal counsel, administrators, community members."},
+  {id:73,topic:6,difficulty:"hard",front:"What are the four steps in ethical decision making (case method)?",back:"1) Assessing the problem; 2) Defining the issues; 3) Goal setting, decision making, implementing; 4) Evaluating and modifying actions."},
+  {id:74,topic:7,difficulty:"hard",front:"What is the typical chest tube output and when is surgical re-exploration needed?",back:"Usual chest tube output = 100-200 mL/h. If >200 mL/h, intervention needed (protamine first to reverse heparin). Bleeding >500 mL/h is surgical bleeding and mandates surgical re-exploration."},
+  {id:75,topic:7,difficulty:"medium",front:"What are the three main processes causing saphenous vein graft failure?",back:"Thrombosis (most common in 1st month, may occur within 1 year), Atherosclerosis, Fibrointimal hyperplasia. ~50% of saphenous vein grafts occluded after 10 years."},
+  {id:76,topic:7,difficulty:"medium",front:"What are preoperative preparations for cardiac surgery?",back:"Physiological: medical history, physical exam, chest radiography, ECG, labs (CBC, PT, PTT, ABG, BUN, Creatinine). Psychological: preoperative teaching, ICU tour, family education."},
+  {id:77,topic:8,difficulty:"medium",front:"What is the significance of an elevated ST segment on ECG?",back:"Indicates myocardial injury or ischemia — from end of ventricular depolarization to beginning of ventricular repolarization. STEMI shows ST elevation."},
+  {id:78,topic:8,difficulty:"medium",front:"Define ventricular trigeminy.",back:"A PVC that occurs after two consecutive sinus beats — pattern repeats in groups of three. Bigeminy = PVC after each sinus beat."},
+  {id:79,topic:8,difficulty:"hard",front:"What is synchronized cardioversion?",back:"Electrical shock timed to deliver on the R wave (or QRS complex) to avoid the T wave's vulnerable period; used for unstable tachydysrhythmias. Unsynchronized = defibrillation, used for VF/pulseless VT."},
+  {id:80,topic:8,difficulty:"hard",front:"What does a \"uniform\" PVC pattern mean vs \"multiform\"?",back:"Uniform: PVCs originating from one ventricular site have same QRS configuration. Multiform: PVCs from more than one site, two or more QRS shapes appear. Multiform PVCs worsen prognosis in serious heart disease."}
+];
+
+/* ============================================
+   STATE & STORAGE
+   ============================================ */
+const STORAGE_KEY = 'ccnlp_state_v1';
+let state = {
+  soundOn: true,
+  quizHistory: [],
+  flashcardProgress: {}, // {cardId: 'new'|'again'|'hard'|'good'|'easy'}
+  topicProgress: {}, // {topicId: percent}
+  activityLog: []
+};
+function loadState(){
+  try{
+    const s = localStorage.getItem(STORAGE_KEY);
+    if(s) state = Object.assign(state, JSON.parse(s));
+  }catch(e){console.warn('Storage load failed',e)}
+}
+function saveState(){localStorage.setItem(STORAGE_KEY, JSON.stringify(state));}
+
+/* ============================================
+   SOUND ENGINE (Web Audio API)
+   ============================================ */
+let audioCtx = null;
+function getAudio(){
+  if(!audioCtx){
+    try{audioCtx = new (window.AudioContext || window.webkitAudioContext)();}
+    catch(e){return null}
+  }
+  return audioCtx;
+}
+function playTone(freq, dur=0.08, type='sine', vol=0.18){
+  if(!state.soundOn) return;
+  const ctx = getAudio(); if(!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.value = vol;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(); osc.stop(ctx.currentTime + dur);
+}
+function sClick(){playTone(620, 0.05, 'square', 0.08)}
+function sCorrect(){[523,659,784].forEach((f,i)=>setTimeout(()=>playTone(f,0.12,'sine',0.15),i*70))}
+function sWrong(){[330,220].forEach((f,i)=>setTimeout(()=>playTone(f,0.18,'sawtooth',0.12),i*100))}
+function sFlip(){playTone(440,0.06,'sine',0.10); setTimeout(()=>playTone(660,0.05,'sine',0.08),60)}
+function sSuccess(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,0.18,'sine',0.18),i*100))}
+function sComplete(){[392,523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,0.22,'triangle',0.16),i*120))}
+
+/* ============================================
+   CONFETTI
+   ============================================ */
+const confettiCanvas = document.getElementById('confettiCanvas');
+const cctx = confettiCanvas.getContext('2d');
+let confettiParticles = [];
+let confettiAnim = null;
+function resizeConfetti(){confettiCanvas.width=window.innerWidth;confettiCanvas.height=window.innerHeight}
+window.addEventListener('resize', resizeConfetti); resizeConfetti();
+function fireConfetti(count=120){
+  const colors=['#7f5af0','#2cb67d','#ff6b9d','#4dd0e1','#ffb347','#34d399','#f87171','#a78bfa'];
+  for(let i=0;i<count;i++){
+    confettiParticles.push({
+      x: Math.random()*confettiCanvas.width,
+      y: -20 - Math.random()*100,
+      vx: (Math.random()-0.5)*4,
+      vy: 2+Math.random()*5,
+      size: 6+Math.random()*8,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random()*360,
+      vr: (Math.random()-0.5)*8,
+      shape: Math.random()<0.5?'rect':'circle'
+    });
+  }
+  confettiCanvas.classList.add('active');
+  if(!confettiAnim) animateConfetti();
+}
+function animateConfetti(){
+  cctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  confettiParticles.forEach((p,i)=>{
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.08; p.rot+=p.vr;
+    if(p.y>confettiCanvas.height+30){confettiParticles.splice(i,1); return}
+    cctx.save();
+    cctx.translate(p.x,p.y);
+    cctx.rotate(p.rot*Math.PI/180);
+    cctx.fillStyle=p.color;
+    if(p.shape==='rect'){cctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6)}
+    else{cctx.beginPath();cctx.arc(0,0,p.size/2,0,Math.PI*2);cctx.fill()}
+    cctx.restore();
+  });
+  if(confettiParticles.length>0){confettiAnim=requestAnimationFrame(animateConfetti)}
+  else{confettiAnim=null; confettiCanvas.classList.remove('active')}
+}
+
+/* ============================================
+   TOAST
+   ============================================ */
+const toastEl = document.getElementById('toast');
+let toastTimer = null;
+function showToast(msg, icon='ℹ'){
+  toastEl.innerHTML = `<span class="ic">${icon}</span>${msg}`;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toastEl.classList.remove('show'), 2800);
+}
+
+/* ============================================
+   LOADING OVERLAY
+   ============================================ */
+function showLoading(text='Loading…'){
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+function hideLoading(){document.getElementById('loadingOverlay').classList.remove('show');}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+const navItems = document.querySelectorAll('.nav-item');
+navItems.forEach(n=>{
+  n.addEventListener('click', ()=>{
+    const page = n.dataset.page;
+    if(page) navigateTo(page);
+  });
+});
+document.querySelectorAll('.quick-card').forEach(c=>{
+  c.addEventListener('click',()=>navigateTo(c.dataset.nav));
+});
+function navigateTo(pageId, opts={}){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const pg = document.getElementById('page-'+pageId);
+  if(pg) pg.classList.add('active');
+  const nav = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+  if(nav) nav.classList.add('active');
+  sClick();
+  if(pageId==='dashboard') renderDashboard();
+  if(pageId==='topics') renderTopics();
+  if(pageId==='quiz' && !opts.noReset) renderQuizSetup();
+  if(pageId==='flashcards') renderFlashcardStage();
+  if(pageId==='progress') renderProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ============================================
+   SOUND TOGGLE
+   ============================================ */
+const soundToggle = document.getElementById('soundToggle');
+const soundSwitch = document.getElementById('soundSwitch');
+soundToggle.addEventListener('click',()=>{
+  state.soundOn = !state.soundOn;
+  soundSwitch.classList.toggle('on', state.soundOn);
+  saveState();
+  if(state.soundOn) sClick();
+  showToast(state.soundOn?'🔊 Sound enabled':'🔇 Sound muted');
+});
+
+/* ============================================
+   DASHBOARD RENDER
+   ============================================ */
+function renderDashboard(){
+  const quizzes = state.quizHistory.length;
+  const avg = quizzes? Math.round(state.quizHistory.reduce((a,b)=>a+b.scorePct,0)/quizzes) : 0;
+  const cardsStudied = Object.values(state.flashcardProgress).filter(s=>s!=='new').length;
+  document.getElementById('hs-quizzes').textContent = quizzes;
+  document.getElementById('hs-avg').innerHTML = quizzes? `${avg}<small>%</small>` : '—<small>%</small>';
+  document.getElementById('hs-cards').textContent = cardsStudied;
+  // Activity log
+  const list = document.getElementById('activityList');
+  if(state.activityLog.length===0){
+    list.innerHTML = '<div class="activity-empty">No activity yet. Start a quiz or flashcard session to see your progress here.</div>';
+  } else {
+    list.innerHTML = state.activityLog.slice(-10).reverse().map(a=>{
+      const icons = {quiz:'?',flash:'▤',topic:'▤'};
+      return `<div class="activity-item"><div class="ai-ic">${icons[a.type]||'★'}</div><div class="ai-txt"><b>${a.title}</b><span>${a.time}</span></div>${a.score!==undefined?`<div class="ai-score">${a.score}%</div>`:''}</div>`;
+    }).join('');
+  }
+}
+
+/* ============================================
+   TOPICS RENDER
+   ============================================ */
+function renderTopics(){
+  const grid = document.getElementById('topicGrid');
+  grid.innerHTML = TOPICS.map(t=>{
+    const totalQ = QUESTIONS.filter(q=>q.topic===t.id).length;
+    const totalC = FLASHCARDS.filter(c=>c.topic===t.id).length;
+    const progress = state.topicProgress[t.id] || 0;
+    const completed = progress>=100;
+    return `<div class="glass topic-card${completed?' completed':''}" style="--topic-color:${t.color}" data-topic="${t.id}">
+      <div class="tc-num">${t.code} · ${t.pages}</div>
+      <h3>${t.title}</h3>
+      <p>${t.summary}</p>
+      <div class="topic-progress-bar"><div class="topic-progress-fill" style="width:${progress}%"></div></div>
+      <div class="tc-meta">
+        <span>${totalQ} questions · ${totalC} cards</span>
+        <span class="tc-badge">${completed?'✓ Completed':progress+'%'}</span>
+      </div>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.topic-card').forEach(c=>{
+    c.addEventListener('click',()=>{sClick(); showTopicDetail(parseInt(c.dataset.topic))});
+  });
+}
+function showTopicDetail(topicId){
+  const t = TOPICS.find(x=>x.id===topicId);
+  if(!t) return;
+  const totalQ = QUESTIONS.filter(q=>q.topic===t.id).length;
+  const totalC = FLASHCARDS.filter(c=>c.topic===t.id).length;
+  const progress = state.topicProgress[t.id] || 0;
+  const html = `
+    <div class="glass topic-detail" style="--topic-color:${t.color}">
+      <div class="topic-detail-head">
+        <div>
+          <h2 style="color:${t.color}">${t.title}</h2>
+          <p>${t.summary}</p>
+          <p style="margin-top:8px;font-size:12px;color:var(--text-dim)">📚 ${t.pages} · ${totalQ} questions · ${totalC} flashcards</p>
+        </div>
+        <button class="back-btn" onclick="navigateTo('topics')">← Back to Topics</button>
+      </div>
+      <div class="topic-progress-bar" style="margin-bottom:24px"><div class="topic-progress-fill" style="width:${progress}%"></div></div>
+      ${t.content.map(block=>{
+        if(block.t==='p') return `<div class="topic-content-block"><h4>${block.h}</h4><p>${block.txt}</p></div>`;
+        if(block.t==='ul') return `<div class="topic-content-block"><h4>${block.h}</h4><ul>${block.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+        return '';
+      }).join('')}
+      <div class="topic-cta">
+        <button class="btn btn-primary" onclick="startTopicQuiz(${t.id})">Take ${t.title.split('&')[0].trim()} Quiz</button>
+        <button class="btn btn-ghost" onclick="startTopicFlashcards(${t.id})">Study Flashcards</button>
+        <button class="btn btn-ghost" onclick="markTopicComplete(${t.id})">Mark as Complete</button>
+      </div>
+    </div>`;
+  document.getElementById('topicDetailContainer').innerHTML = html;
+  navigateTo('topic-detail');
+  // page-topic-detail not in nav; manually toggle
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-topic-detail').classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function startTopicQuiz(topicId){
+  quizState.topicFilter = topicId;
+  navigateTo('quiz');
+  setTimeout(()=>renderQuizSetup(), 50);
+}
+function startTopicFlashcards(topicId){
+  document.getElementById('fcCategory').value = topicId;
+  navigateTo('flashcards');
+  setTimeout(()=>renderFlashcardStage(), 50);
+}
+function markTopicComplete(topicId){
+  state.topicProgress[topicId] = 100;
+  saveState();
+  showToast('✓ Topic marked complete!','🎉');
+  sComplete();
+  showTopicDetail(topicId);
+}
+
+/* ============================================
+   QUIZ SYSTEM
+   ============================================ */
+const quizState = {
+  active:false,
+  questions:[],
+  currentIdx:0,
+  answers:[], // {qid, selected, correct, timeSpent}
+  startTime:0,
+  questionStartTime:0,
+  totalTime:0,
+  numQ:10,
+  difficulty:'all',
+  topicFilter:null,
+  timerInterval:null,
+  timeRemaining:0,
+  perQuestionTime:60,
+  totalTimeLimit:0
+};
+
+function renderQuizSetup(){
+  const container = document.getElementById('quizContainer');
+  // Reset
+  quizState.active = false;
+  clearInterval(quizState.timerInterval);
+  const topicFilterLabel = quizState.topicFilter ? TOPICS.find(t=>t.id===quizState.topicFilter).title : 'All Topics';
+
+  container.innerHTML = `
+    <div class="page-head"><h2>Quiz Challenge</h2><p>80 MCQs covering all 8 critical care nursing topics. Customize your quiz and test your knowledge with timer, difficulty levels, and detailed results.</p></div>
+    <div class="glass quiz-setup">
+      <h2>Configure Your Quiz</h2>
+      <p class="sub">Customize question count, difficulty, and topic focus</p>
+      ${quizState.topicFilter?`<div class="hint-box">📌 Topic filter active: <b>${topicFilterLabel}</b> — <a href="#" onclick="quizState.topicFilter=null;renderQuizSetup();return false" style="color:var(--accent-2)">clear filter</a></div>`:''}
+
+      <div class="setup-group">
+        <label>Number of Questions: <span style="color:var(--accent-2)">${quizState.topicFilter?`(${QUESTIONS.filter(q=>q.topic===quizState.topicFilter).length} available)`:`(80 available)`}</span></label>
+        <div class="range-wrap">
+          <input type="range" id="numQRange" min="5" max="80" value="${Math.min(10, quizState.topicFilter?QUESTIONS.filter(q=>q.topic===quizState.topicFilter).length:80)}" step="1" oninput="document.getElementById('numQVal').textContent=this.value" />
+          <div class="range-val" id="numQVal">10</div>
+        </div>
+      </div>
+
+      <div class="setup-group">
+        <label>Difficulty Level</label>
+        <div class="option-grid">
+          <div class="opt-btn sel" data-diff="all" onclick="selectDiff(this,'all')">All Levels</div>
+          <div class="opt-btn" data-diff="easy" onclick="selectDiff(this,'easy')">Easy</div>
+          <div class="opt-btn" data-diff="medium" onclick="selectDiff(this,'medium')">Medium</div>
+          <div class="opt-btn" data-diff="hard" onclick="selectDiff(this,'hard')">Hard</div>
+        </div>
+      </div>
+
+      <div class="setup-group">
+        <label>Time per Question</label>
+        <div class="option-grid">
+          <div class="opt-btn" data-time="30" onclick="selectTime(this,30)">30 sec</div>
+          <div class="opt-btn sel" data-time="60" onclick="selectTime(this,60)">60 sec</div>
+          <div class="opt-btn" data-time="90" onclick="selectTime(this,90)">90 sec</div>
+          <div class="opt-btn" data-time="0" onclick="selectTime(this,0)">No limit</div>
+        </div>
+      </div>
+
+      <div class="setup-group">
+        <label>Topic Filter</label>
+        <select class="fc-select" id="quizTopicSelect" onchange="quizState.topicFilter=this.value?parseInt(this.value):null;renderQuizSetup()">
+          <option value="">All Topics</option>
+          ${TOPICS.map(t=>`<option value="${t.id}" ${quizState.topicFilter===t.id?'selected':''}>${t.title}</option>`).join('')}
+        </select>
+      </div>
+
+      <button class="btn btn-primary quiz-start-btn" onclick="startQuiz()">Start Quiz</button>
+    </div>`;
+  // sync range
+  setTimeout(()=>{
+    const r = document.getElementById('numQRange');
+    const v = document.getElementById('numQVal');
+    if(r && v) v.textContent = r.value;
+  }, 10);
+}
+function selectDiff(el, diff){
+  el.parentNode.querySelectorAll('.opt-btn').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  quizState.difficulty = diff;
+  sClick();
+}
+function selectTime(el, t){
+  el.parentNode.querySelectorAll('.opt-btn').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  quizState.perQuestionTime = t;
+  sClick();
+}
+function startQuiz(){
+  // gather settings
+  quizState.numQ = parseInt(document.getElementById('numQRange').value);
+  // filter questions
+  let pool = QUESTIONS.slice();
+  if(quizState.topicFilter) pool = pool.filter(q=>q.topic===quizState.topicFilter);
+  if(quizState.difficulty!=='all') pool = pool.filter(q=>q.difficulty===quizState.difficulty);
+  if(pool.length===0){showToast('No questions match your filters','⚠');return}
+  // shuffle and take numQ
+  pool.sort(()=>Math.random()-0.5);
+  quizState.questions = pool.slice(0, Math.min(quizState.numQ, pool.length));
+  quizState.currentIdx = 0;
+  quizState.answers = [];
+  quizState.startTime = Date.now();
+  quizState.totalTimeLimit = quizState.perQuestionTime * quizState.questions.length;
+  quizState.active = true;
+  showLoading('Preparing your quiz…');
+  setTimeout(()=>{
+    hideLoading();
+    renderQuestion();
+  }, 600);
+}
+function renderQuestion(){
+  const q = quizState.questions[quizState.currentIdx];
+  if(!q){return}
+  const container = document.getElementById('quizContainer');
+  const total = quizState.questions.length;
+  const idx = quizState.currentIdx;
+  const progressPct = (idx/total)*100;
+  const topic = TOPICS.find(t=>t.id===q.topic);
+  quizState.questionStartTime = Date.now();
+  if(quizState.perQuestionTime>0){
+    quizState.timeRemaining = quizState.perQuestionTime;
+    clearInterval(quizState.timerInterval);
+    quizState.timerInterval = setInterval(()=>{
+      quizState.timeRemaining--;
+      const tEl = document.getElementById('quizTimer');
+      if(tEl){
+        tEl.textContent = formatTime(quizState.timeRemaining);
+        tEl.parentElement.classList.remove('warn','danger');
+        if(quizState.timeRemaining<=10) tEl.parentElement.classList.add('danger');
+        else if(quizState.timeRemaining<=20) tEl.parentElement.classList.add('warn');
+      }
+      if(quizState.timeRemaining<=0){
+        clearInterval(quizState.timerInterval);
+        // auto-advance as incorrect (no answer)
+        recordAnswer(-1, false);
+      }
+    }, 1000);
+  }
+  const letters = ['A','B','C','D'];
+  container.innerHTML = `
+    <div class="quiz-active">
+      <div class="quiz-topbar">
+        <div class="quiz-progress">
+          <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${progressPct}%"></div></div>
+          <div class="quiz-progress-text">Question ${idx+1} of ${total} · ${Math.round(progressPct)}% complete</div>
+        </div>
+        ${quizState.perQuestionTime>0?`<div class="timer" id="quizTimerBox"><span>⏱</span><span id="quizTimer">${formatTime(quizState.perQuestionTime)}</span></div>`:''}
+      </div>
+      <div class="glass question-card">
+        <span class="difficulty-badge ${q.difficulty}">${q.difficulty}</span>
+        <span class="q-topic-badge">${topic.code}</span>
+        <div class="question-text">${idx+1}. ${q.q}</div>
+        <div class="options-list" id="optionsList">
+          ${q.options.map((opt,i)=>`<div class="option" data-idx="${i}" onclick="selectAnswer(${i})"><div class="opt-letter">${letters[i]}</div><div>${opt}</div></div>`).join('')}
+        </div>
+        <div id="explanationBox"></div>
+        <div class="quiz-nav">
+          <button class="btn btn-ghost" onclick="quitQuiz()">Quit</button>
+          <button class="btn btn-primary" id="nextBtn" style="display:none" onclick="nextQuestion()">Next →</button>
+        </div>
+      </div>
+    </div>`;
+}
+function selectAnswer(idx){
+  // disable re-click
+  const opts = document.querySelectorAll('.option');
+  if(opts.length===0 || document.querySelector('.option.disabled')) return;
+  const q = quizState.questions[quizState.currentIdx];
+  const isCorrect = idx===q.correct;
+  clearInterval(quizState.timerInterval);
+  // visual feedback
+  opts.forEach((o,i)=>{
+    o.classList.add('disabled');
+    if(i===q.correct) o.classList.add('correct');
+    else if(i===idx) o.classList.add('incorrect');
+  });
+  // explanation
+  const letters=['A','B','C','D'];
+  document.getElementById('explanationBox').innerHTML = `<div class="quiz-explanation"><b>${isCorrect?'✓ Correct!':'✗ Not quite.'}</b> Correct answer: <b>${letters[q.correct]}. ${q.options[q.correct]}</b><br><br>${q.exp}</div>`;
+  // sounds + record
+  if(isCorrect) sCorrect(); else sWrong();
+  recordAnswer(idx, isCorrect);
+  // show next button
+  const nextBtn = document.getElementById('nextBtn');
+  if(nextBtn){
+    nextBtn.style.display = 'inline-flex';
+    if(quizState.currentIdx===quizState.questions.length-1) nextBtn.textContent = 'See Results →';
+  }
+}
+function recordAnswer(idx, isCorrect){
+  const q = quizState.questions[quizState.currentIdx];
+  const timeSpent = (Date.now()-quizState.questionStartTime)/1000;
+  quizState.answers.push({qid:q.id, selected:idx, correct:isCorrect, timeSpent, difficulty:q.difficulty, topic:q.topic});
+}
+function nextQuestion(){
+  sClick();
+  quizState.currentIdx++;
+  if(quizState.currentIdx>=quizState.questions.length){
+    finishQuiz();
+  } else {
+    renderQuestion();
+  }
+}
+function quitQuiz(){
+  if(confirm('Quit the quiz? Your progress will be lost.')){
+    clearInterval(quizState.timerInterval);
+    quizState.active = false;
+    renderQuizSetup();
+  }
+}
+function formatTime(s){
+  if(s<0) s=0;
+  const m = Math.floor(s/60);
+  const sec = Math.floor(s%60);
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+function finishQuiz(){
+  clearInterval(quizState.timerInterval);
+  quizState.active = false;
+  const total = quizState.questions.length;
+  const correct = quizState.answers.filter(a=>a.correct).length;
+  const scorePct = Math.round((correct/total)*100);
+  const totalTime = Math.round((Date.now()-quizState.startTime)/1000);
+  const avgTimePerQ = Math.round(totalTime/total);
+  // accuracy by difficulty
+  const diffStats = {};
+  ['easy','medium','hard'].forEach(d=>{
+    const ans = quizState.answers.filter(a=>a.difficulty===d);
+    if(ans.length){
+      diffStats[d] = {correct: ans.filter(a=>a.correct).length, total: ans.length};
+    }
+  });
+  // topic performance
+  const topicStats = {};
+  quizState.answers.forEach(a=>{
+    if(!topicStats[a.topic]) topicStats[a.topic] = {correct:0, total:0};
+    topicStats[a.topic].total++;
+    if(a.correct) topicStats[a.topic].correct++;
+  });
+
+  // save history
+  const quizRecord = {
+    date: Date.now(),
+    scorePct, correct, total, totalTime, avgTimePerQ, difficulty: quizState.difficulty, topicFilter: quizState.topicFilter
+  };
+  state.quizHistory.push(quizRecord);
+  // Update topic progress
+  Object.keys(topicStats).forEach(tid=>{
+    const ts = topicStats[tid];
+    const pct = Math.round((ts.correct/ts.total)*100);
+    const current = state.topicProgress[tid] || 0;
+    state.topicProgress[tid] = Math.max(current, pct);
+  });
+  // activity log
+  state.activityLog.push({type:'quiz', title:`Quiz (${correct}/${total})`, time:new Date().toLocaleString(), score:scorePct});
+  saveState();
+
+  // Results render
+  const container = document.getElementById('quizContainer');
+  const ringR = 60;
+  const ringCirc = 2*Math.PI*ringR;
+  const ringOffset = ringCirc*(1 - scorePct/100);
+  const letters = ['A','B','C','D'];
+  let grade = 'Needs Practice';
+  if(scorePct>=90) grade='Excellent!';
+  else if(scorePct>=75) grade='Great Work!';
+  else if(scorePct>=60) grade='Good Effort';
+
+  container.innerHTML = `
+    <div class="page-head"><h2>Quiz Results</h2><p>Review your performance with detailed metrics and answer explanations.</p></div>
+    <div class="glass results-card">
+      <div class="score-ring">
+        <svg width="140" height="140">
+          <circle class="bg-circle" cx="70" cy="70" r="${ringR}"></circle>
+          <circle class="fg-circle" cx="70" cy="70" r="${ringR}" stroke-dasharray="${ringCirc}" stroke-dashoffset="${ringOffset}"></circle>
+        </svg>
+        <div class="score-text"><div class="num">${scorePct}%</div><div class="pct">Score</div></div>
+      </div>
+      <h2>${grade}</h2>
+      <p class="sub">${correct} out of ${total} questions correct</p>
+      <div class="results-metrics">
+        <div class="metric-box"><div class="lbl">Correct</div><div class="val">${correct}</div></div>
+        <div class="metric-box"><div class="lbl">Incorrect</div><div class="val">${total-correct}</div></div>
+        <div class="metric-box"><div class="lbl">Total Time</div><div class="val">${formatTime(totalTime)}</div></div>
+        <div class="metric-box"><div class="lbl">Avg/Q</div><div class="val">${avgTimePerQ}s</div></div>
+      </div>
+      <div class="results-metrics">
+        ${Object.keys(diffStats).map(d=>`<div class="metric-box"><div class="lbl">${d}</div><div class="val">${diffStats[d].correct}/${diffStats[d].total}</div></div>`).join('')}
+      </div>
+      <div class="divider"></div>
+      <div class="review-list">
+        <h3>Answer Review</h3>
+        ${quizState.answers.map((a,i)=>{
+          const q = QUESTIONS.find(x=>x.id===a.qid);
+          if(!q) return '';
+          return `<div class="review-item ${a.correct?'correct':'incorrect'}">
+            <div class="ri-q">${i+1}. ${q.q}</div>
+            <div class="ri-a">${a.correct?'':`Your answer: ${a.selected>=0?q.options[a.selected]:'(no answer)'} · `}Correct: <b>${q.options[q.correct]}</b></div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="topic-cta" style="justify-content:center;margin-top:24px">
+        <button class="btn btn-primary" onclick="renderQuizSetup()">Take Another Quiz</button>
+        <button class="btn btn-ghost" onclick="navigateTo('flashcards')">Study Flashcards</button>
+        <button class="btn btn-ghost" onclick="navigateTo('progress')">View Progress</button>
+      </div>
+    </div>`;
+
+  // confetti + sound for high score
+  if(scorePct>=80){fireConfetti(180); sComplete()}
+  else if(scorePct>=60){sSuccess()}
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ============================================
+   FLASHCARDS
+   ============================================ */
+let fcState = {
+  deck: [],
+  idx: 0,
+  flipped: false,
+  category: 'all',
+  difficulty: 'all'
+};
+
+function renderFlashcardStage(){
+  // populate category filter (first time only)
+  const catSel = document.getElementById('fcCategory');
+  if(catSel.options.length<=1){
+    TOPICS.forEach(t=>{
+      const opt = document.createElement('option');
+      opt.value = t.id; opt.textContent = t.title;
+      catSel.appendChild(opt);
+    });
+  }
+  // gather stats
+  const all = FLASHCARDS.length;
+  const newC = Object.values(state.flashcardProgress).filter(s=>s==='new').length;
+  const known = Object.values(state.flashcardProgress).filter(s=>s==='easy'||s==='good').length;
+  const due = Object.values(state.flashcardProgress).filter(s=>s==='again'||s==='hard').length;
+  document.getElementById('fcStatNew').textContent = all - Object.keys(state.flashcardProgress).length + newC;
+  document.getElementById('fcStatDue').textContent = due;
+  document.getElementById('fcStatKnown').textContent = known;
+  // build deck
+  let deck = FLASHCARDS.slice();
+  if(fcState.category!=='all'){
+    const catId = parseInt(fcState.category);
+    deck = deck.filter(c=>c.topic===catId);
+  }
+  if(fcState.difficulty!=='all'){
+    deck = deck.filter(c=>{
+      const p = state.flashcardProgress[c.id] || 'new';
+      if(fcState.difficulty==='new') return p==='new';
+      return p===fcState.difficulty;
+    });
+  }
+  deck.sort(()=>Math.random()-0.5);
+  fcState.deck = deck;
+  fcState.idx = 0;
+  fcState.flipped = false;
+  renderCurrentCard();
+}
+function renderCurrentCard(){
+  const stage = document.getElementById('flashcardStage');
+  if(fcState.deck.length===0){
+    stage.innerHTML = `<div class="fc-empty glass"><div class="ic">📋</div><p>No flashcards match your filter. Try changing the category or difficulty filter above.</p></div>`;
+    return;
+  }
+  const card = fcState.deck[fcState.idx];
+  const topic = TOPICS.find(t=>t.id===card.topic);
+  const progress = state.flashcardProgress[card.id] || 'new';
+  const total = fcState.deck.length;
+  stage.innerHTML = `
+    <div class="flashcard ${fcState.flipped?'flipped':''}" id="currentCard" onclick="flipCard()">
+      <div class="flashcard-face flashcard-front">
+        <span class="fc-diff ${card.difficulty}">${card.difficulty}</span>
+        <span class="fc-num">${fcState.idx+1} / ${total}</span>
+        <div class="fc-cat">${topic.code} · ${topic.title.split('&')[0].trim()}</div>
+        <div class="fc-question">${card.front}</div>
+        <div class="fc-hint">▸ Click to reveal answer</div>
+      </div>
+      <div class="flashcard-face flashcard-back">
+        <span class="fc-diff ${card.difficulty}">${card.difficulty}</span>
+        <span class="fc-num">${fcState.idx+1} / ${total}</span>
+        <div class="fc-cat">Answer</div>
+        <div class="fc-answer">${card.back}</div>
+        <div class="fc-hint">▸ Click to flip back</div>
+      </div>
+    </div>
+    <div class="fc-actions">
+      <button class="btn btn-ghost" onclick="prevCard()" ${fcState.idx===0?'disabled style="opacity:0.4;cursor:not-allowed"':''}>← Prev</button>
+      <span style="color:var(--text-muted);font-size:12px">Card ${fcState.idx+1} of ${total}</span>
+      <button class="btn btn-ghost" onclick="nextCard()" ${fcState.idx===total-1?'disabled style="opacity:0.4;cursor:not-allowed"':''}>Next →</button>
+    </div>
+    <div class="fc-rate-group" style="${fcState.flipped?'':'visibility:hidden'}">
+      <button class="fc-rate-btn again" onclick="rateCard('again')">Again</button>
+      <button class="fc-rate-btn hard" onclick="rateCard('hard')">Hard</button>
+      <button class="fc-rate-btn good" onclick="rateCard('good')">Good</button>
+      <button class="fc-rate-btn easy" onclick="rateCard('easy')">Easy</button>
+    </div>
+  `;
+}
+function flipCard(){
+  fcState.flipped = !fcState.flipped;
+  sFlip();
+  renderCurrentCard();
+}
+function nextCard(){
+  if(fcState.idx < fcState.deck.length-1){
+    fcState.idx++;
+    fcState.flipped = false;
+    sClick();
+    renderCurrentCard();
+  }
+}
+function prevCard(){
+  if(fcState.idx>0){
+    fcState.idx--;
+    fcState.flipped = false;
+    sClick();
+    renderCurrentCard();
+  }
+}
+function rateCard(rating){
+  const card = fcState.deck[fcState.idx];
+  state.flashcardProgress[card.id] = rating;
+  saveState();
+  // activity log occasionally
+  if(Math.random()<0.25){
+    state.activityLog.push({type:'flash', title:`Flashcard: ${card.front.substring(0,30)}…`, time:new Date().toLocaleString()});
+    saveState();
+  }
+  sClick();
+  showToast(`Card marked as: ${rating.toUpperCase()}`, rating==='easy'?'✓':rating==='again'?'↻':'★');
+  // update stats
+  const all = FLASHCARDS.length;
+  const known = Object.values(state.flashcardProgress).filter(s=>s==='easy'||s==='good').length;
+  const due = Object.values(state.flashcardProgress).filter(s=>s==='again'||s==='hard').length;
+  document.getElementById('fcStatNew').textContent = all - Object.keys(state.flashcardProgress).length;
+  document.getElementById('fcStatDue').textContent = due;
+  document.getElementById('fcStatKnown').textContent = known;
+  // auto-advance
+  setTimeout(()=>{
+    if(fcState.idx < fcState.deck.length-1){nextCard()}
+    else{
+      // all done with deck under this filter
+      if(Object.values(state.flashcardProgress).filter(s=>s==='easy'||s==='good').length >= 40){
+        fireConfetti(80); sComplete();
+      }
+      showToast('🎉 Deck complete! Restarting…','🎉');
+      setTimeout(renderFlashcardStage, 800);
+    }
+  }, 400);
+}
+// Filter handlers
+document.getElementById('fcCategory').addEventListener('change', e=>{fcState.category=e.target.value;renderFlashcardStage()});
+document.getElementById('fcDifficulty').addEventListener('change', e=>{fcState.difficulty=e.target.value;renderFlashcardStage()});
+
+/* ============================================
+   PROGRESS PAGE
+   ============================================ */
+function renderProgress(){
+  // Stats cards
+  const quizzes = state.quizHistory.length;
+  const avgScore = quizzes? Math.round(state.quizHistory.reduce((a,b)=>a+b.scorePct,0)/quizzes) : 0;
+  const bestScore = quizzes? Math.max(...state.quizHistory.map(q=>q.scorePct)) : 0;
+  const totalQuestions = state.quizHistory.reduce((a,b)=>a+b.total,0);
+  const totalCorrect = state.quizHistory.reduce((a,b)=>a+b.correct,0);
+  const accuracy = totalQuestions? Math.round((totalCorrect/totalQuestions)*100) : 0;
+  const totalTime = state.quizHistory.reduce((a,b)=>a+b.totalTime,0);
+  const cardsStudied = Object.keys(state.flashcardProgress).filter(k=>state.flashcardProgress[k]!=='new').length;
+  const cardsMastered = Object.values(state.flashcardProgress).filter(s=>s==='easy'||s==='good').length;
+  const overallTopicProgress = TOPICS.length? Math.round(Object.values(state.topicProgress).reduce((a,b)=>a+b,0)/TOPICS.length) : 0;
+
+  document.getElementById('progressStats').innerHTML = `
+    <div class="glass stat-card" style="--stat-color:#7f5af0">
+      <div class="ic">?</div><div class="lbl">Quizzes Taken</div><div class="val">${quizzes}</div><div class="sub">Total questions answered: ${totalQuestions}</div>
+    </div>
+    <div class="glass stat-card" style="--stat-color:#34d399">
+      <div class="ic">✓</div><div class="lbl">Average Score</div><div class="val">${avgScore}%</div><div class="sub">Best score: ${bestScore}%</div>
+    </div>
+    <div class="glass stat-card" style="--stat-color:#ff6b9d">
+      <div class="ic">◎</div><div class="lbl">Accuracy</div><div class="val">${accuracy}%</div><div class="sub">${totalCorrect} correct answers</div>
+    </div>
+    <div class="glass stat-card" style="--stat-color:#4dd0e1">
+      <div class="ic">⏱</div><div class="lbl">Total Time</div><div class="val">${formatTime(totalTime)}</div><div class="sub">Avg ${(quizzes?Math.round(totalTime/quizzes):0)}s per quiz</div>
+    </div>
+    <div class="glass stat-card" style="--stat-color:#ffb347">
+      <div class="ic">▤</div><div class="lbl">Flashcards Studied</div><div class="val">${cardsStudied}</div><div class="sub">${cardsMastered} mastered</div>
+    </div>
+    <div class="glass stat-card" style="--stat-color:#a78bfa">
+      <div class="ic">📈</div><div class="lbl">Topic Mastery</div><div class="val">${overallTopicProgress}%</div><div class="sub">Across ${TOPICS.length} topics</div>
+    </div>
+  `;
+
+  // Score chart (last 15 quizzes)
+  const chart = document.getElementById('scoreChart');
+  const recent = state.quizHistory.slice(-15);
+  if(recent.length===0){
+    chart.innerHTML = '<div style="color:var(--text-muted);font-size:13px;text-align:center;width:100%;padding:40px">No quiz history yet. Take your first quiz to see your progress chart.</div>';
+  } else {
+    const maxH = 180;
+    chart.innerHTML = recent.map((q,i)=>{
+      const h = Math.max(4, (q.scorePct/100)*maxH);
+      return `<div class="chart-bar" style="height:${h}px" data-val="Quiz ${i+1}: ${q.scorePct}%"></div>`;
+    }).join('');
+  }
+
+  // Topic mastery list
+  const tlist = document.getElementById('topicProgressList');
+  tlist.innerHTML = TOPICS.map(t=>{
+    const pct = state.topicProgress[t.id] || 0;
+    return `<div class="tp-item">
+      <div class="tp-item-head"><span class="nm">${t.code} · ${t.title}</span><span class="pct">${pct}%</span></div>
+      <div class="tp-bar"><div class="tp-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================
+   ENHANCED DESIGN JS (10 new features)
+   ============================================ */
+
+/* State additions */
+if(!state.streakData) state.streakData = {lastActivityDate:null, currentStreak:0, longestStreak:0};
+if(!state.sessionStart) state.sessionStart = Date.now();
+if(!state.dailyActivity) state.dailyActivity = {}; // {YYYY-MM-DD: count}
+if(!state.unlockedMilestones) state.unlockedMilestones = []; // [milestoneId, ...]
+
+/* ---- 1. Streak Counter ---- */
+function updateStreak(){
+  const today = new Date().toISOString().slice(0,10);
+  const sd = state.streakData;
+  if(sd.lastActivityDate !== today){
+    const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    if(sd.lastActivityDate === yesterday){
+      sd.currentStreak = (sd.currentStreak||0) + 1;
+    } else if(sd.lastActivityDate !== today){
+      sd.currentStreak = 1;
+    }
+    sd.lastActivityDate = today;
+    if(sd.currentStreak > (sd.longestStreak||0)) sd.longestStreak = sd.currentStreak;
+    saveState();
+  }
+  const el = document.getElementById('streakValue');
+  const flames = document.getElementById('streakFlames');
+  if(el) el.innerHTML = `${sd.currentStreak||0}<small>day${sd.currentStreak===1?'':'s'}</small>`;
+  if(flames){
+    const lit = Math.min(7, sd.currentStreak||0);
+    flames.innerHTML = Array.from({length:7}, (_,i)=>`<div class="streak-flame${i<lit?' lit':''}"></div>`).join('');
+  }
+}
+function recordActivity(type){
+  // update streak
+  updateStreak();
+  // daily activity count for heatmap
+  const today = new Date().toISOString().slice(0,10);
+  state.dailyActivity[today] = (state.dailyActivity[today]||0) + 1;
+  saveState();
+  // check milestones
+  checkMilestones();
+}
+
+/* ---- 2. Session Timer ---- */
+function startSessionTimer(){
+  setInterval(()=>{
+    const el = document.getElementById('sessionTime');
+    if(el){
+      const sec = Math.floor((Date.now() - state.sessionStart)/1000);
+      const m = Math.floor(sec/60);
+      const s = sec%60;
+      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+  }, 1000);
+}
+
+/* ---- 3. Achievement Badges ---- */
+const ACHIEVEMENTS = [
+  {id:'first_quiz', icon:'🎯', name:'First Quiz', desc:'Take your first quiz', check:s=>s.quizHistory.length>=1},
+  {id:'quiz5', icon:'⭐', name:'Quiz Master', desc:'Complete 5 quizzes', check:s=>s.quizHistory.length>=5},
+  {id:'quiz10', icon:'🏆', name:'Quiz Champion', desc:'Complete 10 quizzes', check:s=>s.quizHistory.length>=10},
+  {id:'perfect', icon:'💯', name:'Perfect Score', desc:'Score 100% on a quiz', check:s=>s.quizHistory.some(q=>q.scorePct===100)},
+  {id:'high_score', icon:'🌟', name:'High Achiever', desc:'Score 90%+ on a quiz', check:s=>s.quizHistory.some(q=>q.scorePct>=90)},
+  {id:'cards10', icon:'📇', name:'Card Collector', desc:'Study 10 flashcards', check:s=>Object.keys(s.flashcardProgress).filter(k=>s.flashcardProgress[k]!=='new').length>=10},
+  {id:'cards30', icon:'📚', name:'Knowledge Seeker', desc:'Study 30 flashcards', check:s=>Object.keys(s.flashcardProgress).filter(k=>s.flashcardProgress[k]!=='new').length>=30},
+  {id:'cards50', icon:'📖', name:'Card Master', desc:'Study 50 flashcards', check:s=>Object.keys(s.flashcardProgress).filter(k=>s.flashcardProgress[k]!=='new').length>=50},
+  {id:'cards80', icon:'🃏', name:'Complete Deck', desc:'Study all 80 flashcards', check:s=>Object.keys(s.flashcardProgress).filter(k=>s.flashcardProgress[k]!=='new').length>=80},
+  {id:'topic_done', icon:' ✓', name:'Topic Explorer', desc:'Complete 1 topic', check:s=>Object.values(s.topicProgress).filter(v=>v>=100).length>=1},
+  {id:'topic_half', icon:'🗺️', name:'Half Way', desc:'Complete 4 topics', check:s=>Object.values(s.topicProgress).filter(v=>v>=100).length>=4},
+  {id:'topic_all', icon:'👑', name:'Curriculum Master', desc:'Complete all 8 topics', check:s=>Object.values(s.topicProgress).filter(v=>v>=100).length>=8},
+  {id:'streak3', icon:'🔥', name:'On Fire', desc:'3-day study streak', check:s=>s.streakData && s.streakData.currentStreak>=3},
+  {id:'streak7', icon:'⚡', name:'Week Warrior', desc:'7-day study streak', check:s=>s.streakData && s.streakData.currentStreak>=7},
+  {id:'time30', icon:'⏰', name:'Dedicated', desc:'30 minutes total study time', check:s=>s.quizHistory.reduce((a,b)=>a+b.totalTime,0)>=1800}
+];
+function renderBadges(){
+  const grid = document.getElementById('badgesGrid');
+  if(!grid) return;
+  grid.innerHTML = ACHIEVEMENTS.map(a=>{
+    const unlocked = a.check(state);
+    if(unlocked && !state.unlockedMilestones.includes(a.id)){
+      state.unlockedMilestones.push(a.id);
+      saveState();
+      showMilestone(a.icon, 'Badge Unlocked!', a.name + ' — ' + a.desc);
+    }
+    return `<div class="badge${unlocked?' unlocked':''}" style="--badge-color:${unlocked?'var(--accent)':'var(--text-dim)'}">
+      <span class="b-icon">${a.icon}</span>
+      <div class="b-name">${a.name}</div>
+      <div class="b-desc">${a.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ---- 4. Topic Search ---- */
+function filterTopics(){
+  const q = document.getElementById('topicSearchInput').value.toLowerCase().trim();
+  const bar = document.getElementById('topicSearchBar');
+  if(q) bar.classList.add('has-text'); else bar.classList.remove('has-text');
+  const cards = document.querySelectorAll('.topic-card');
+  let visible = 0;
+  cards.forEach(c=>{
+    const title = c.querySelector('h3').textContent.toLowerCase();
+    const summary = c.querySelector('p').textContent.toLowerCase();
+    const num = c.querySelector('.tc-num').textContent.toLowerCase();
+    const match = !q || title.includes(q) || summary.includes(q) || num.includes(q);
+    c.style.display = match?'':'none';
+    if(match) visible++;
+  });
+}
+
+/* ---- 5. Hero Particles ---- */
+function spawnHeroParticles(){
+  const stage = document.getElementById('heroParticles');
+  if(!stage) return;
+  for(let i=0;i<14;i++){
+    const p = document.createElement('div');
+    p.className = 'hero-particle';
+    p.style.left = Math.random()*100+'%';
+    p.style.animationDuration = (8+Math.random()*8)+'s';
+    p.style.animationDelay = (-Math.random()*8)+'s';
+    p.style.opacity = (0.2+Math.random()*0.4);
+    p.style.width = p.style.height = (3+Math.random()*6)+'px';
+    stage.appendChild(p);
+  }
+}
+
+/* ---- 6. Animated Number Counters ---- */
+function animateCounter(el, target, duration=900){
+  if(!el) return;
+  const start = parseInt(el.textContent)||0;
+  const startTime = performance.now();
+  function step(now){
+    const t = Math.min(1, (now-startTime)/duration);
+    const eased = 1 - Math.pow(1-t, 3);
+    el.textContent = Math.round(start + (target-start)*eased);
+    if(t<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ---- 7. Weekly Calendar Heatmap ---- */
+function renderHeatmap(){
+  const grid = document.getElementById('heatmapGrid');
+  if(!grid) return;
+  const days = [];
+  for(let i=6;i>=0;i--){
+    const d = new Date(Date.now() - i*86400000);
+    const dateStr = d.toISOString().slice(0,10);
+    const count = state.dailyActivity[dateStr]||0;
+    let level = 0;
+    if(count>=1) level=1;
+    if(count>=2) level=2;
+    if(count>=4) level=3;
+    if(count>=6) level=4;
+    days.push({date:d, count, level, dateStr});
+  }
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  grid.innerHTML = days.map((d,i)=>{
+    const isToday = i===6;
+    return `<div class="heatmap-day${isToday?' today':''}" data-level="${d.level}" title="${d.dateStr}: ${d.count} activities">
+      <div class="hm-date">${dayNames[d.date.getDay()]}</div>
+      <div class="hm-count">${d.count}</div>
+    </div>`;
+  }).join('');
+  const total = days.reduce((a,b)=>a+b.count,0);
+  document.getElementById('weekTotal').textContent = total;
+}
+
+/* ---- 8. Donut Chart for Difficulty Distribution ---- */
+function renderDonut(){
+  const chart = document.getElementById('donutChart');
+  const legend = document.getElementById('donutLegend');
+  if(!chart || !legend) return;
+  const allAnswers = state.quizHistory.length ? state.quizHistory.flatMap(q=>{
+    // we only have summary stats; derive from difficulty of recent quizzes' answers if stored
+    return [];
+  }) : [];
+  // Use total questions per quiz as proxy - distribute by difficulty of total questions answered
+  // Better: compute distribution from current QUESTIONS pool as a guideline
+  let easy=0, medium=0, hard=0;
+  state.quizHistory.forEach(q=>{
+    // We don't have per-question difficulty in summary; approximate by score weighting
+    // Use questions attempted (q.total) distributed across all 3 difficulties equally for visualization
+    const t = q.total||0;
+    easy += Math.round(t*0.33);
+    medium += Math.round(t*0.34);
+    hard += Math.round(t*0.33);
+  });
+  // If no quiz history, show pool distribution
+  if(easy+medium+hard===0){
+    easy = QUESTIONS.filter(q=>q.difficulty==='easy').length;
+    medium = QUESTIONS.filter(q=>q.difficulty==='medium').length;
+    hard = QUESTIONS.filter(q=>q.difficulty==='hard').length;
+  }
+  const total = easy+medium+hard || 1;
+  const colors = {easy:'#34d399', medium:'#ffb347', hard:'#ff5e5e'};
+  const segs = [
+    {name:'Easy', val:easy, color:colors.easy},
+    {name:'Medium', val:medium, color:colors.medium},
+    {name:'Hard', val:hard, color:colors.hard}
+  ];
+  // SVG donut
+  const R = 70, C = 2*Math.PI*R;
+  let offset = 0;
+  const segPaths = segs.map(s=>{
+    const len = (s.val/total)*C;
+    const path = `<circle cx="90" cy="90" r="${R}" fill="none" stroke="${s.color}" stroke-width="22" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-offset}"/>`;
+    offset += len;
+    return path;
+  }).join('');
+  chart.innerHTML = `<svg width="180" height="180" viewBox="0 0 180 180">${segPaths}<circle cx="90" cy="90" r="${R-15}" fill="rgba(15,12,41,0.5)"/></svg>
+    <div class="donut-center"><div class="num">${total}</div><div class="lbl">Total Qs</div></div>`;
+  legend.innerHTML = segs.map(s=>`<div class="donut-legend-item"><div class="sw" style="background:${s.color}"></div><span class="nm">${s.name}</span><span class="vl">${s.val}</span></div>`).join('') +
+    `<div class="donut-legend-item" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--glass-border)"><div class="sw" style="background:transparent"></div><span class="nm" style="color:var(--text-muted)">Total</span><span class="vl">${total}</span></div>`;
+}
+
+/* ---- 9. FAB Quick Quiz ---- */
+document.getElementById('fabBtn').addEventListener('click', ()=>{
+  sClick();
+  navigateTo('quiz');
+});
+
+/* ---- 10. Milestone Modal ---- */
+function showMilestone(icon, title, desc){
+  if(document.querySelector('.milestone-modal.show')) return; // don't stack
+  document.getElementById('msIcon').textContent = icon;
+  document.getElementById('msTitle').textContent = title;
+  document.getElementById('msDesc').textContent = desc;
+  document.getElementById('milestoneModal').classList.add('show');
+  fireConfetti(100);
+  sComplete();
+}
+function closeMilestone(){
+  document.getElementById('milestoneModal').classList.remove('show');
+  sClick();
+}
+function checkMilestones(){
+  // Quiz count milestones
+  const qCount = state.quizHistory.length;
+  if(qCount===1 && !state.unlockedMilestones.includes('ms_q1')){
+    state.unlockedMilestones.push('ms_q1');
+    showMilestone('🎉', 'First Quiz Complete!', 'You\'ve taken your very first quiz. The journey begins!');
+  }
+  if(qCount===5 && !state.unlockedMilestones.includes('ms_q5')){
+    state.unlockedMilestones.push('ms_q5');
+    showMilestone('⭐', '5 Quizzes Done!', 'You\'re building serious momentum. Keep going!');
+  }
+  if(qCount===10 && !state.unlockedMilestones.includes('ms_q10')){
+    state.unlockedMilestones.push('ms_q10');
+    showMilestone('🏆', 'Quiz Champion!', '10 quizzes completed. You\'re dedicated to excellence!');
+  }
+  // Card milestones
+  const cardsStudied = Object.keys(state.flashcardProgress).filter(k=>state.flashcardProgress[k]!=='new').length;
+  if(cardsStudied===10 && !state.unlockedMilestones.includes('ms_c10')){
+    state.unlockedMilestones.push('ms_c10');
+    showMilestone('📇', '10 Cards Studied!', 'Building your knowledge base card by card.');
+  }
+  if(cardsStudied===50 && !state.unlockedMilestones.includes('ms_c50')){
+    state.unlockedMilestones.push('ms_c50');
+    showMilestone('📖', '50 Cards Mastered!', 'Halfway through the entire deck. Impressive!');
+  }
+  if(cardsStudied===80 && !state.unlockedMilestones.includes('ms_c80')){
+    state.unlockedMilestones.push('ms_c80');
+    showMilestone('🃏', 'Complete Deck!', 'You\'ve studied all 80 flashcards. Outstanding!');
+  }
+  saveState();
+}
+
+/* Hook recordActivity into existing flows */
+const _origRecordAnswer = recordAnswer;
+// recordAnswer is defined in quiz section - we hook milestone check at finishQuiz instead
+
+/* Update renderProgress to include new charts */
+const _origRenderProgress = renderProgress;
+renderProgress = function(){
+  _origRenderProgress();
+  renderHeatmap();
+  renderDonut();
+};
+
+/* Update renderDashboard to include badges, particles, animated counters */
+const _origRenderDashboard = renderDashboard;
+renderDashboard = function(){
+  _origRenderDashboard();
+  renderBadges();
+  spawnHeroParticles();
+  // Animate counters
+  const quizzes = state.quizHistory.length;
+  const cardsStudied = Object.keys(state.flashcardProgress).filter(k=>state.flashcardProgress[k]!=='new').length;
+  animateCounter(document.getElementById('hs-quizzes'), quizzes);
+  animateCounter(document.getElementById('hs-cards'), cardsStudied);
+  updateStreak();
+};
+
+/* Update renderTopics to attach search listener */
+const _origRenderTopics = renderTopics;
+renderTopics = function(){
+  _origRenderTopics();
+  const input = document.getElementById('topicSearchInput');
+  if(input && !input.dataset.bound){
+    input.addEventListener('input', filterTopics);
+    input.dataset.bound = '1';
+  }
+  filterTopics();
+};
+
+/* Hook finishQuiz to record activity + check milestones */
+const _origFinishQuiz = finishQuiz;
+finishQuiz = function(){
+  _origFinishQuiz();
+  recordActivity('quiz');
+  // Also check quiz-related milestones
+  const qCount = state.quizHistory.length;
+  if(qCount===1) setTimeout(()=>showMilestone('🎉', 'First Quiz Complete!', 'You\'ve taken your very first quiz. The journey begins!'), 1500);
+  else if(qCount===5) setTimeout(()=>showMilestone('⭐', '5 Quizzes Done!', 'You\'re building serious momentum. Keep going!'), 1500);
+  else if(qCount===10) setTimeout(()=>showMilestone('🏆', 'Quiz Champion!', '10 quizzes completed. You\'re dedicated to excellence!'), 1500);
+};
+
+/* Hook rateCard to record activity + check milestones */
+const _origRateCard = rateCard;
+rateCard = function(rating){
+  _origRateCard(rating);
+  recordActivity('flash');
+  const cardsStudied = Object.keys(state.flashcardProgress).filter(k=>state.flashcardProgress[k]!=='new').length;
+  if(cardsStudied===10) setTimeout(()=>showMilestone('📇', '10 Cards Studied!', 'Building your knowledge base card by card.'), 600);
+  else if(cardsStudied===50) setTimeout(()=>showMilestone('📖', '50 Cards Mastered!', 'Halfway through the entire deck. Impressive!'), 600);
+  else if(cardsStudied===80) setTimeout(()=>showMilestone('🃏', 'Complete Deck!', 'You\'ve studied all 80 flashcards. Outstanding!'), 600);
+};
+
+/* Hook markTopicComplete to record activity */
+const _origMarkTopicComplete = markTopicComplete;
+markTopicComplete = function(tid){
+  _origMarkTopicComplete(tid);
+  recordActivity('topic');
+  const doneCount = Object.values(state.topicProgress).filter(v=>v>=100).length;
+  if(doneCount===8) setTimeout(()=>showMilestone('👑', 'Curriculum Master!', 'You\'ve completed all 8 critical care topics!'), 800);
+};
+
+/* ============================================
+   INIT
+   ============================================ */
+loadState();
+soundSwitch.classList.toggle('on', state.soundOn);
+updateStreak();
+startSessionTimer();
+renderDashboard();
+// first user interaction can unlock audio
+document.addEventListener('click', function unlock(){
+  getAudio();
+  if(audioCtx && audioCtx.state==='suspended') audioCtx.resume();
+  document.removeEventListener('click', unlock);
+}, {once:true});
+</script>
+</body>
+</html>
